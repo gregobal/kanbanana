@@ -6,6 +6,9 @@ const board = require('./board');
 
 module.exports = {
   Query: {
+    hello: () => {
+      return {message: 'Hello from GraphQL API!'}
+    },
     user: (_, __, {isAuth, userId}) => {
       authGuard(isAuth);
       return user.getUser(userId)

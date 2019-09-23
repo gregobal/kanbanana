@@ -3,6 +3,7 @@ const {gql} = require('apollo-server');
 
 const typeDefs = gql`
     type Query {
+        hello: Hello!
         user: User! 
         board: Board
         boards: [Board]
@@ -23,6 +24,10 @@ const typeDefs = gql`
         createBoard(
             title: String!            
         ):Board!
+    }
+    
+    type Hello {
+        message: String!
     }
 
     type User {
