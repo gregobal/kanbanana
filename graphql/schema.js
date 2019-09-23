@@ -1,9 +1,11 @@
 const {gql} = require('apollo-server');
 
+
 const typeDefs = gql`
     type Query {
-        users: [User]
-        posts: [Post]
+        user: User! 
+        board: Board
+        boards: [Board]
     }
 
     type Mutation {
@@ -18,9 +20,9 @@ const typeDefs = gql`
             password: String!
         ):AuthData!
 
-        createPost(
-            message: String!
-        ):Post!
+        createBoard(
+            title: String!            
+        ):Board!
     }
 
     type User {
@@ -28,6 +30,7 @@ const typeDefs = gql`
         email: String!
         password: String!
         name: String!
+        boards: [Board!]
     }
 
     type AuthData {
@@ -35,8 +38,10 @@ const typeDefs = gql`
         userId: String!
     }
 
-    type Post {
-        message: String!
+    type Board {
+        _id: ID!
+        title: String!
+        creator: User!
     }
 `;
 

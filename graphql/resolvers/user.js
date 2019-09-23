@@ -1,4 +1,4 @@
-const {AuthenticationError, UserInputError} = require('apollo-server');
+const {ApolloError, UserInputError} = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -6,15 +6,15 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 const {jwtKey} = require('../../config/cred');
 
+
 module.exports = {
-  getUsers: async () => {
+  getUser: async (userId) => {
     try {
-      return await User.find();
+      return await User.findById(userId);
     } catch (e) {
-      console.error(e)
+      throw new ApolloError(e)
     }
   },
-
   createUser: async ({email, password, name}) => {
     const errors = [];
     if (!validator.isEmail(email)) {
@@ -42,10 +42,8 @@ module.exports = {
       name
     });
 
-    const createdUser = await user.save();
-    return {...createdUser._doc, _id: createdUser._id.toString()};
+    return await user.save();
   },
-
   login: async ({email, password}) => {
     const user = await User.findOne({email});
     if (!user) {

@@ -5,17 +5,17 @@ const {jwtKey} = require('../config/cred');
 
 module.exports = ({req}) => {
   const token = req.get('Authorization') || '';
-  let user;
+  let verified;
 
   try {
-    user = jwt.verify(token, jwtKey);
+    verified = jwt.verify(token, jwtKey);
   } catch (e) {
     return {isAuth: false}
   }
 
-  if (!user) {
+  if (!verified) {
     return {isAuth: false}
   }
 
-  return {...user, isAuth: true};
+  return {userId: verified.userId, isAuth: true};
 };

@@ -1,39 +1,36 @@
 const {AuthenticationError} = require('apollo-server');
 
 const user = require('./user');
-const post = require('./post');
+const board = require('./board');
 
 
 module.exports = {
   Query: {
-    users: (_, __, context) => {
-      authGuard(context);
-      return user.getUsers()
+    user: (_, __, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return user.getUser(userId)
     },
-
-    posts: (_, __, context) => {
-      authGuard(context);
-      return post.getPosts()
+    boards: (_, __, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return board.getBoards(userId)
     }
   },
   Mutation: {
-    createUser: (_, args, context) => {
+    createUser: (_, args) => {
       return user.createUser(args)
     },
-
-    login: (_, args, context) => {
+    login: (_, args) => {
       return user.login(args)
     },
-
-    createPost: (_, args, context) => {
-      authGuard(context);
-      return post.createPost(args)
+    createBoard: (_, args, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return board.createBoard(args, userId)
     },
   }
 };
 
-function authGuard(context) {
-  if (!context.isAuth) {
+function authGuard(isAuth) {
+  if (!isAuth) {
     throw new AuthenticationError('You must be logged in.');
   }
 }
