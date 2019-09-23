@@ -66,7 +66,7 @@ typings/
 /config/cred.dev.js
 
 # client builds
-/dist
+/client/dist
 
 /tests/e2e/reports/
 selenium-debug.log
