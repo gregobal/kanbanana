@@ -6,8 +6,8 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-app-bar>
-    <v-content>
-      <hello-world/>
+    <v-content class="fill-height">
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>
@@ -23,5 +23,8 @@ export default {
   data: () => ({
     //
   }),
+  beforeCreate() {
+    this.$router.push('/login')
+  }
 };
 </script>

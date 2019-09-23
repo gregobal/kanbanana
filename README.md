@@ -1,4 +1,4 @@
-# KanBanan
+# KanBanana
 
 Simple KanBan Board App
 

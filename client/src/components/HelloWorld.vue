@@ -1,13 +1,14 @@
 <template>
-  <v-container>
-    <v-layout
-      text-center
-      wrap
+  <v-container
+          class="fill-height"
+          fluid
+  >
+    <v-row
+            align="center"
+            justify="center"
     >
-      <v-flex xs12>
-        {{hello.message}}
-      </v-flex>
-    </v-layout>
+      <h1 v-if="hello">{{hello.message}}</h1>
+    </v-row>
   </v-container>
 </template>
 
