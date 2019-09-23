@@ -1,7 +1,7 @@
 const {AuthenticationError} = require('apollo-server');
 
-const user = require('../controllers/user');
-const post = require('../controllers/post');
+const user = require('./user');
+const post = require('./post');
 
 
 module.exports = {

@@ -1,9 +1,10 @@
+const {AuthenticationError, UserInputError} = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/User');
-const {jwtKey} = require('../config/cred');
+const User = require('../../models/User');
+const {jwtKey} = require('../../config/cred');
 
 module.exports = {
   getUsers: async () => {
@@ -17,24 +18,19 @@ module.exports = {
   createUser: async ({email, password, name}) => {
     const errors = [];
     if (!validator.isEmail(email)) {
-      errors.push({message: 'Email is invalid.'});
+      errors.push('Email is invalid.');
     }
     if (
-      validator.isEmpty(password) ||
-      !validator.isLength(password, {min: 8})
-    ) {
-      errors.push({message: 'Password too short.'});
+      validator.isEmpty(password) || !validator.isLength(password, {min: 8})) {
+      errors.push('Password too short.');
     }
     if (errors.length > 0) {
-      const error = new Error('Invalid input.');
-      error.data = errors;
-      error.code = 422;
-      throw error;
+      throw new UserInputError(errors.join(' '));
     }
 
     const existed = await User.findOne({email});
     if (existed) {
-      throw new Error(`User with email '${email}' exists already.`);
+      throw new UserInputError(`User with email '${email}' exists already.`);
     }
 
     const salt = bcrypt.genSaltSync(10);
@@ -53,16 +49,12 @@ module.exports = {
   login: async ({email, password}) => {
     const user = await User.findOne({email});
     if (!user) {
-      const error = new Error('User not found.');
-      error.code = 401;
-      throw error;
+      throw new UserInputError(`User with email '${email}' not found.`);
     }
 
     const isEqual = bcrypt.compareSync(password, user.password);
     if (!isEqual) {
-      const error = new Error('Password is incorrect.');
-      error.code = 401;
-      throw error;
+      throw new UserInputError('Password is incorrect.');
     }
 
     const token = jwt.sign(
