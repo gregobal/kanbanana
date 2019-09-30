@@ -1,0 +1,79 @@
+<template>
+    <v-container fluid>
+        <v-row justify="center">
+            <h1 class="headline">Your projects</h1>
+        </v-row>
+        <v-divider class="my-3" inset></v-divider>
+        <v-row align="start" justify="start">
+            <v-col cols="2" class="text-center">
+                <project-card-update v-if="isAdd"
+                                     @edit-close="onUpdate">
+                </project-card-update>
+                <v-card v-else
+                        color="transparent" flat
+                        height="240">
+                    <v-btn
+                           @click="isAdd = true"
+                           style="margin-top: 80px"
+                           color="success"
+                           fab x-large outlined>
+                        <v-icon large>add</v-icon>
+                    </v-btn>
+                </v-card>
+            </v-col>
+            <v-col cols="2"
+                   v-for="project in projects" :key="project._id">
+                <project-card :project="project"
+                              @update="onUpdate">
+                </project-card>
+            </v-col>
+        </v-row>
+        <v-divider class="my-3"></v-divider>
+    </v-container>
+</template>
+
+<script>
+  import gql from 'graphql-tag'
+  import ProjectCard from "../components/project-card/ProjectCard";
+  import ProjectCardUpdate from "../components/project-card/ProjectCardUpdate";
+  export default {
+    name: "Projects",
+    components: {ProjectCardUpdate, ProjectCard},
+    data () {
+      return {
+        projects: [],
+        isAdd: false
+      }
+    },
+    apollo: {
+      projects: {
+        query: gql`query {
+          projects {
+            _id
+            title
+            descr
+            updatedAt
+          }
+        }`,
+      }
+    },
+    methods: {
+      async onUpdate (data) {
+        if (data) {
+          const {updateProject, createProject} = data;
+          if (updateProject) {
+            const idx = this.projects.findIndex(({_id}) => _id === updateProject._id);
+            this.projects[idx] = updateProject
+          } else if (createProject) {
+            this.projects.unshift(createProject)
+          }
+        }
+        this.isAdd = false
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

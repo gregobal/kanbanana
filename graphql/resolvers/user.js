@@ -10,22 +10,20 @@ const {jwtKey} = require('../../config/cred');
 module.exports = {
   getUser: async (userId) => {
     try {
-      return await User.findById(userId);
+      const user = await User.findById(userId);
+      user.password = null;
+      return user;
     } catch (e) {
       throw new ApolloError(e)
     }
   },
   createUser: async ({email, password, name}) => {
-    const errors = [];
     if (!validator.isEmail(email)) {
-      errors.push('Email is invalid.');
+      throw new UserInputError('Email is invalid.');
     }
     if (
       validator.isEmpty(password) || !validator.isLength(password, {min: 8})) {
-      errors.push('Password too short.');
-    }
-    if (errors.length > 0) {
-      throw new UserInputError(errors.join(' '));
+      throw new UserInputError('Password too short.');
     }
 
     const existed = await User.findOne({email});
@@ -61,8 +59,8 @@ module.exports = {
         email: user.email
       },
       jwtKey,
-      {expiresIn: '1h'}
+      {expiresIn: 3600}
     );
-    return {token: token, userId: user._id.toString()}
+    return {token: token}
   }
 };

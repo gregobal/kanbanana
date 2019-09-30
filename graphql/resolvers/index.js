@@ -2,20 +2,32 @@ const {AuthenticationError} = require('apollo-server');
 
 const user = require('./user');
 const board = require('./board');
+const project = require('./project');
 
 
 module.exports = {
   Query: {
-    hello: () => {
+    hello: (_, __, {isAuth}) => {
+      authGuard(isAuth);
       return {message: 'Hello from Kanbanana GraphQL API!'}
     },
     user: (_, __, {isAuth, userId}) => {
-      authGuard(isAuth);
+      if (!isAuth) {
+        return null
+      }
       return user.getUser(userId)
     },
-    boards: (_, __, {isAuth, userId}) => {
+    projects: (_, __, {isAuth, userId}) => {
       authGuard(isAuth);
-      return board.getBoards(userId)
+      return project.getProjects(userId)
+    },
+    board: async (_, args, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return board.getBoard(args)
+    },
+    boards: async (_, args, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return board.getBoards(args, userId)
     }
   },
   Mutation: {
@@ -24,6 +36,14 @@ module.exports = {
     },
     login: (_, args) => {
       return user.login(args)
+    },
+    createProject: (_, args, {isAuth, userId}) => {
+      authGuard(isAuth);
+      return project.createProject(args, userId)
+    },
+    updateProject: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return project.updateProject(args)
     },
     createBoard: (_, args, {isAuth, userId}) => {
       authGuard(isAuth);

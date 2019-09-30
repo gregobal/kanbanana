@@ -8,8 +8,7 @@
                     <v-card class="elevation-12">
                         <v-toolbar flat>
                             <v-toolbar-title>
-                                <span>Welcome back! </span>
-                                <span v-if="createUser">{{createUser.message}}</span>
+                                <span>Welcome!</span>
                             </v-toolbar-title>
                         </v-toolbar>
                         <v-divider></v-divider>
@@ -18,6 +17,12 @@
                                           label="Email"
                                           name="email"
                                           prepend-icon="email"
+                                          type="text">
+                            </v-text-field>
+                            <v-text-field v-model="name"
+                                          label="Name"
+                                          name="name"
+                                          prepend-icon="person"
                                           type="text">
                             </v-text-field>
                             <v-text-field v-model="password"
@@ -30,8 +35,8 @@
                         <v-card-actions>
                             <div class="flex-grow-1"></div>
                             <v-btn large
-                                   @click="login">
-                                <span class="mx-5">Login</span>
+                                   @click="register">
+                                <span class="mx-5">Register</span>
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -43,49 +48,44 @@
 
 <script>
   import gql from 'graphql-tag'
-  import {onLogin} from '../vue-apollo'
-
   export default {
-    name: "Login",
-    props: {
-      createUser: Object
-    },
-    data() {
-      return {
-        email: this.createUser && this.createUser.email || null,
-        password: null
-      }
-    },
+    name: "Register",
+    data: () => ({
+      email: null,
+      password: null,
+      name: null
+    }),
     methods: {
-      async login() {
+      async register() {
         try {
           const result = await this.$apollo.mutate({
             mutation: gql`
-                mutation ($email: String!, $password: String!) {
-                    login(
+                mutation ($email: String!, $password: String!, $name: String) {
+                    createUser(
                         email: $email
                         password: $password
+                        name: $name
                     ) {
-                        token
+                        email
                     }
             }`,
             variables: {
               email: this.email,
-              password: this.password
+              password: this.password,
+              name: this.name
             }
           });
           const {data} = result;
-          if (data && data.login) {
-            await onLogin(this.$apollo.provider.defaultClient, data.login.token);
-            await this.$apollo.mutate({
-              mutation: gql`mutation ($value: Boolean!) {
-                  setIsAuth (value: $value) @client
-              }`,
-              variables: {
-                value: true,
+          if (data && data.createUser) {
+            this.$router.push({
+              name: 'login',
+              params: {
+                createUser: {
+                  ...data.createUser,
+                  message: 'Now you can log in using your data.'
+                }
               }
-            });
-            this.createUser ? this.$router.push('/') : this.$router.back()
+            })
           } else {
             const {errors} = result;
             throw new Error(errors[0])

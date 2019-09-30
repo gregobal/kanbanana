@@ -1,30 +1,25 @@
 <template>
   <v-app>
-    <v-app-bar app>
-      <v-toolbar-title class="headline">
-        <span>Kanbanana</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-app-bar>
-    <v-content class="fill-height">
+    <v-content class="fill-height yellow lighten-5">
+      <app-header></app-header>
       <router-view></router-view>
     </v-content>
+    <app-loader></app-loader>
+    <error-handler></error-handler>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+  import AppLoader from './components/AppLoader'
+  import AppHeader from './components/AppHeader'
+  import ErrorHandler from './components/ErrorHandler'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-  },
-  data: () => ({
-    //
-  }),
-  beforeCreate() {
-    this.$router.push('/login')
+    ErrorHandler,
+    AppHeader,
+    AppLoader
   }
 };
 </script>

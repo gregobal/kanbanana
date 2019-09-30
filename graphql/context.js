@@ -4,11 +4,11 @@ const {jwtKey} = require('../config/cred');
 
 
 module.exports = ({req}) => {
-  const token = req.get('Authorization') || '';
+  const token = req.get('authorization') || '';
   let verified;
 
   try {
-    verified = jwt.verify(token, jwtKey);
+    verified = jwt.verify(token.split(' ')[1], jwtKey);
   } catch (e) {
     return {isAuth: false}
   }

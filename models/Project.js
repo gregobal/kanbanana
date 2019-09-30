@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 
 module.exports = mongoose.model(
-  'boards',
+  'projects',
   Schema(
     {
       title: {
@@ -15,11 +15,6 @@ module.exports = mongoose.model(
       },
       creator: {
         ref: 'users',
-        type: Schema.Types.ObjectId,
-        required: true
-      },
-      project: {
-        ref: 'projects',
         type: Schema.Types.ObjectId,
         required: true
       }

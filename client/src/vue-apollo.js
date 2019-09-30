@@ -1,12 +1,18 @@
 import Vue from 'vue'
 import VueApollo from 'vue-apollo'
 import { createApolloClient, restartWebsockets } from 'vue-cli-plugin-apollo/graphql-client'
+import gql from 'graphql-tag'
+
+import typeDefs from './graphql/schema'
+import init from './graphql/init'
+import resolvers from './graphql/resolvers'
+
 
 // Install the vue plugin
-Vue.use(VueApollo)
+Vue.use(VueApollo);
 
 // Name of the localStorage item
-const AUTH_TOKEN = 'apollo-token'
+const AUTH_TOKEN = 'apollo-token';
 
 // Http endpoint
 const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:4000/graphql'
@@ -42,10 +48,7 @@ const defaultOptions = {
 
   // Additional ApolloClient options
   // apollo: { ... }
-
-  // Client local data (see apollo-link-state)
-  // clientState: { resolvers: { ... }, defaults: { ... } }
-}
+};
 
 // Call this in the Vue app file
 export function createProvider (options = {}) {
@@ -53,32 +56,60 @@ export function createProvider (options = {}) {
   const { apolloClient, wsClient } = createApolloClient({
     ...defaultOptions,
     ...options,
-  })
-  apolloClient.wsClient = wsClient
+    typeDefs,
+    resolvers,
+    onCacheInit: init
+  });
+  apolloClient.wsClient = wsClient;
 
   // Create vue apollo provider
   const apolloProvider = new VueApollo({
     defaultClient: apolloClient,
     defaultOptions: {
-      $query: {
-        // fetchPolicy: 'cache-and-network',
-      },
+      $query: { },
     },
     errorHandler (error) {
+      if (error.message === 'GraphQL error: You must be logged in.') {
+        this.$route.name !== 'login' && this.$router.push('login')
+      }
+      this.$apollo.mutate({
+        mutation: gql`mutation ($value: Boolean!) {
+            setError (value: $value) @client
+        }`,
+        variables: {
+          value: error.message,
+        },
+      });
       // eslint-disable-next-line no-console
       console.log('%cError', 'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;', error.message)
     },
-  })
+    watchLoading (isLoading) {
+      const {name} = this.$options;
+      if (name !== ('BoardsList' || 'ProjectCard')) {
+        this.$apollo.mutate({
+          mutation: gql`mutation ($value: Boolean!) {
+              setLoading (value: $value) @client
+          }`,
+          variables: {
+            value: isLoading,
+          }
+        });
+      }
+    },
+  });
 
   return apolloProvider
 }
+
+const apolloProvider = createProvider();
+export {apolloProvider};
 
 // Manually call this when user log in
 export async function onLogin (apolloClient, token) {
   if (typeof localStorage !== 'undefined' && token) {
     localStorage.setItem(AUTH_TOKEN, token)
   }
-  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient)
+  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient);
   try {
     await apolloClient.resetStore()
   } catch (e) {
@@ -92,7 +123,7 @@ export async function onLogout (apolloClient) {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(AUTH_TOKEN)
   }
-  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient)
+  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient);
   try {
     await apolloClient.resetStore()
   } catch (e) {

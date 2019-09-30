@@ -7,7 +7,7 @@
             align="center"
             justify="center"
     >
-      <h1 v-if="hello">{{hello.message}}</h1>
+      <h1 v-if="hello">! {{hello.message}}</h1>
     </v-row>
   </v-container>
 </template>
@@ -20,7 +20,7 @@ export default {
       hello {
         message
       }
-    }`,
-  },
+    }`
+  }
 };
 </script>
