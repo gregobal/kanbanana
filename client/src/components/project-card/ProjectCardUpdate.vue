@@ -2,7 +2,7 @@
     <v-card height="240">
         <v-card-title>
             <v-text-field
-                    v-model="title"
+                    v-model.trim="title"
                     class="my-0 py-0"
                     label="Title"
                     single-line
@@ -11,7 +11,7 @@
         </v-card-title>
         <v-card-text class="pb-0">
             <v-textarea
-                    v-model="descr"
+                    v-model.trim="descr"
                     class="my-0 py-0"
                     label="Description"
                     no-resize
@@ -89,7 +89,6 @@
                   }
                 }`,
               variables: {
-                _id: this._id,
                 title: this.title,
                 descr: this.descr
               },

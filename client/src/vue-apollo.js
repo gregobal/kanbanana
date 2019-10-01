@@ -66,13 +66,17 @@ export function createProvider (options = {}) {
   const apolloProvider = new VueApollo({
     defaultClient: apolloClient,
     defaultOptions: {
-      $query: { },
+      $query: {
+        watchQuery: {
+          fetchPolicy: 'cache-and-network'
+        },
+        query: {
+          fetchPolicy: 'network-only'
+        }
+      },
     },
-    errorHandler (error) {
-      if (error.message === 'GraphQL error: You must be logged in.') {
-        this.$route.name !== 'login' && this.$router.push('login')
-      }
-      this.$apollo.mutate({
+    async errorHandler (error) {
+      await this.$apollo.mutate({
         mutation: gql`mutation ($value: Boolean!) {
             setError (value: $value) @client
         }`,
