@@ -27,10 +27,21 @@
       }`,
     },
     watch: {
-      error: function () {
+      error: async function () {
         if (this.error) {
           this.errorMessage = this.error;
-          this.snackbar = true
+          this.snackbar = true;
+          if (this.error === 'GraphQL error: You must be logged in.') {
+            await this.$apollo.mutate({
+              mutation: gql`mutation ($value: Boolean!) {
+                setIsAuth (value: $value) @client
+              }`,
+              variables: {
+                value: false,
+              }
+            });
+            this.$route.name !== 'login' && this.$router.push('login')
+          }
         }
       },
       snackbar: function (newSnackbar) {

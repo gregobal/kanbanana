@@ -63,9 +63,16 @@
           const {updateProject, createProject} = data;
           if (updateProject) {
             const idx = this.projects.findIndex(({_id}) => _id === updateProject._id);
-            this.projects[idx] = updateProject
+            this.projects = [
+              ...this.projects.slice(0, idx),
+              updateProject,
+              ...this.projects.slice(idx + 1)
+            ]
           } else if (createProject) {
-            this.projects.unshift(createProject)
+            this.projects = [
+              createProject,
+              ...this.projects
+            ]
           }
         }
         this.isAdd = false

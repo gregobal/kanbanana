@@ -21,7 +21,7 @@ module.exports = {
       authGuard(isAuth);
       return project.getProjects(userId)
     },
-    board: async (_, args, {isAuth, userId}) => {
+    board: async (_, args, {isAuth}) => {
       authGuard(isAuth);
       return board.getBoard(args)
     },
