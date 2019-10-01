@@ -1,15 +1,15 @@
 <template>
-    <v-container class="fill-height"
-                 fluid>
-        <v-row align="center"
+    <v-container>
+        <v-row class="my-6"
+               align="center"
                justify="center">
-            <v-col cols="12" sm="8" md="4">
+            <v-col class="mt-6" cols="12" sm="8" md="4">
                 <v-form>
                     <v-card class="elevation-12">
                         <v-toolbar flat>
                             <v-toolbar-title>
-                                <span>Welcome back! </span>
-                                <span v-if="createUser">{{createUser.message}}</span>
+                                <span v-if="createUser">Welcome! {{createUser.message}}</span>
+                                <span v-else>Welcome back! </span>
                             </v-toolbar-title>
                         </v-toolbar>
                         <v-divider></v-divider>
@@ -36,6 +36,11 @@
                         </v-card-actions>
                     </v-card>
                 </v-form>
+            </v-col>
+        </v-row>
+        <v-row xs="12">
+            <v-col class="text-center">
+                <router-link to="/register">Not a member - register now.</router-link>
             </v-col>
         </v-row>
     </v-container>

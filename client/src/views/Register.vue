@@ -1,9 +1,9 @@
 <template>
-    <v-container class="fill-height"
-                 fluid>
-        <v-row align="center"
+    <v-container>
+        <v-row class="my-6"
+               align="center"
                justify="center">
-            <v-col cols="12" sm="8" md="4">
+            <v-col class="mt-6" cols="12" sm="8" md="4">
                 <v-form>
                     <v-card class="elevation-12">
                         <v-toolbar flat>
