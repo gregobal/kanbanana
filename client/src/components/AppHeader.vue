@@ -30,14 +30,12 @@
       }
     },
     apollo: {
-      user:  gql`
-        query {
-            user {
-                email,
-                name
-            }
+      user: gql`query {
+        user {
+            email,
+            name
         }
-      `
+      }`
     }
   }
 </script>
