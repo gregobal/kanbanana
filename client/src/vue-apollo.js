@@ -66,14 +66,12 @@ export function createProvider (options = {}) {
   const apolloProvider = new VueApollo({
     defaultClient: apolloClient,
     defaultOptions: {
-      $query: {
-        watchQuery: {
-          fetchPolicy: 'cache-and-network'
-        },
-        query: {
-          fetchPolicy: 'network-only'
-        }
+      $watchQuery: {
+        fetchPolicy: 'cache-and-network'
       },
+      $query: {
+        fetchPolicy: 'network-only'
+      }
     },
     async errorHandler (error) {
       await this.$apollo.mutate({

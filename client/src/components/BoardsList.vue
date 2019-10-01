@@ -22,8 +22,8 @@
                     @click:append-outer="isAdd = false"
             ></v-text-field>
         </v-list-item>
-        <template v-for="board in boards">
-            <v-divider :key="board._id"></v-divider>
+        <template v-for="(board, i) in boards">
+            <v-divider :key="i"></v-divider>
             <v-list-item :key="board._id" :to="`/board/${board._id}`">
                 <v-list-item-content>
                     <v-list-item-title>
