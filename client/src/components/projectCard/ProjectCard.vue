@@ -24,7 +24,7 @@
                         Boards
                         <v-icon>{{showBoards ? 'arrow_drop_up' : 'arrow_drop_down'}}</v-icon>
                     </v-btn>
-                    <span class="caption">{{formatDate(project.updatedAt)}}</span>
+                    <span class="caption">{{formatDate(project.createdAt)}}</span>
                 </v-row>
             </v-card-actions>
             <boards-list v-if="showBoards"

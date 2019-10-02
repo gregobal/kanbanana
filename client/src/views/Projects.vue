@@ -34,8 +34,8 @@
 
 <script>
   import gql from 'graphql-tag'
-  import ProjectCard from "../components/project-card/ProjectCard";
-  import ProjectCardUpdate from "../components/project-card/ProjectCardUpdate";
+  import ProjectCard from "../components/projectCard/ProjectCard";
+  import ProjectCardUpdate from "../components/projectCard/ProjectCardUpdate";
   export default {
     name: "Projects",
     components: {ProjectCardUpdate, ProjectCard},
@@ -52,7 +52,7 @@
             _id
             title
             descr
-            updatedAt
+            createdAt
           }
         }`,
       }

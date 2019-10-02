@@ -9,20 +9,20 @@ module.exports = {
     try {
       return await Project
         .find({creator: userId})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('creator');
     } catch (e) {
       throw new ApolloError(e)
     }
   },
   createProject: async ({title, descr}, userId) => {
-    const user = await User.findById(userId);
-    const project = new Project({
-      title,
-      descr,
-      creator: user
-    });
     try {
+      const user = await User.findById(userId);
+      const project = new Project({
+        title,
+        descr,
+        creator: user
+      });
       return await project.save()
     } catch (e) {
       throw new ApolloError(e)
@@ -39,7 +39,7 @@ module.exports = {
         {new: true}
       );
     } catch (e) {
-      errorHandler(res, e)
+      throw new ApolloError(e)
     }
   }
 };

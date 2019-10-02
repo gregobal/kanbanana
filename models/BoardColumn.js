@@ -3,32 +3,22 @@ const Schema = mongoose.Schema;
 
 
 module.exports = mongoose.model(
-  'boards',
+  'board-columns',
   Schema(
     {
       title: {
         type: String,
         required: true
       },
-      descr: {
-        type: String
-      },
-      creator: {
-        ref: 'users',
-        type: Schema.Types.ObjectId,
+      position: {
+        type: Number,
         required: true
       },
-      project: {
-        ref: 'projects',
+      board: {
+        ref: 'boards',
         type: Schema.Types.ObjectId,
         required: true
-      },
-      columns: [
-        {
-          ref: 'board-columns',
-          type: Schema.Types.ObjectId
-        }
-      ]
+      }
     },
     {timestamps: true}
   )

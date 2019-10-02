@@ -1,5 +1,5 @@
 <template>
-    <v-snackbar :timeout="10000"
+    <v-snackbar :timeout="4000"
                 :multi-line="true"
                 color="error"
                 v-model="snackbar">
