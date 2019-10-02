@@ -8,7 +8,9 @@ const Board = require('../../models/Board');
 module.exports = {
   getBoard: async ({boardId}) => {
     try {
-      return await Board.findById(boardId);
+      return await Board.findById(boardId)
+        .populate('project')
+        .populate('columns');
     } catch (e) {
       throw new ApolloError(e)
     }
@@ -28,8 +30,8 @@ module.exports = {
     }
   },
   createBoard: async ({title, descr, projectId}, userId) => {
-    const user = await User.findById(userId);
     try {
+      const user = await User.findById(userId);
       const project = await Project.findById(projectId);
       const board = new Board({
         title,
@@ -38,6 +40,20 @@ module.exports = {
         project
       });
       return await board.save()
+    } catch (e) {
+      throw new ApolloError(e)
+    }
+  },
+  updateBoard: async ({boardId, title, descr}) => {
+    try {
+      return Board.findOneAndUpdate(
+        {_id: boardId},
+        {
+          title,
+          descr
+        },
+        {new: true}
+      );
     } catch (e) {
       throw new ApolloError(e)
     }

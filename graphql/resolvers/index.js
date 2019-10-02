@@ -3,6 +3,7 @@ const {AuthenticationError} = require('apollo-server');
 const user = require('./user');
 const board = require('./board');
 const project = require('./project');
+const boardColumn = require('./boardColumn');
 
 
 module.exports = {
@@ -49,6 +50,14 @@ module.exports = {
       authGuard(isAuth);
       return board.createBoard(args, userId)
     },
+    updateBoard: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return board.updateBoard(args)
+    },
+    createBoardColumn: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardColumn.createBoardColumn(args)
+    }
   }
 };
 

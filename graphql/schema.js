@@ -7,8 +7,8 @@ module.exports = gql`
         user: User
         project: Project
         projects: [Project]
-        board(boardId: ID!): Board
-        boards(projectId: ID!): [Board]
+        board(boardId: ID!): Board!
+        boards(projectId: ID!): [Board!]!
     }
 
     type Mutation {
@@ -39,6 +39,17 @@ module.exports = gql`
             title: String!
             descr: String            
         ):Board!
+
+        updateBoard(
+            boardId: ID!
+            title: String!
+            descr: String
+        ):Board!
+
+        createBoardColumn(
+            boardId: ID!            
+            title: String!            
+        ):BoardColumn!
     }
     
     type Hello {
@@ -60,8 +71,8 @@ module.exports = gql`
         _id: ID!
         title: String!
         descr: String
-        creator: User!        
-        updatedAt: String!
+        creator: User!
+        createdAt: String!
     }
     
     type Board {
@@ -70,5 +81,13 @@ module.exports = gql`
         descr: String
         creator: User!
         project: Project!
+        columns: [BoardColumn]
+    }
+    
+    type BoardColumn {
+        _id: ID!
+        position: Int!
+        title: String!
+        board: Board!
     }
 `;

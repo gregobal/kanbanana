@@ -16,6 +16,7 @@
                     label="Title"
                     single-line
                     clearable
+                    :loading="loading"
                     append-icon="save"
                     append-outer-icon="cancel"
                     @click:append="onSave"
@@ -92,6 +93,7 @@
           const {createBoard} = data;
           this.boards.push(createBoard);
           this.isAdd = false;
+          this.title = null
         } catch (e) {
           this.$apollo.mutate({
             mutation: gql`mutation ($value: Boolean!) {
