@@ -45,6 +45,11 @@ module.exports = gql`
             title: String!
             descr: String
         ):Board!
+        
+        dragColumnInBoard(
+            boardId: ID!
+            columnIds: [ID!]!
+        ):Board!
 
         createBoardColumn(
             boardId: ID!            
@@ -85,9 +90,12 @@ module.exports = gql`
     }
     
     type BoardColumn {
-        _id: ID!
-        position: Int!
+        _id: ID!        
         title: String!
         board: Board!
+    }
+    
+    type BoardTask {
+        _id: ID!
     }
 `;

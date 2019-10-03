@@ -54,6 +54,10 @@ module.exports = {
       authGuard(isAuth);
       return board.updateBoard(args)
     },
+    dragColumnInBoard: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return board.dragColumnInBoard(args)
+    },
     createBoardColumn: (_, args, {isAuth}) => {
       authGuard(isAuth);
       return boardColumn.createBoardColumn(args)

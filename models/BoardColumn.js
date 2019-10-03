@@ -10,10 +10,6 @@ module.exports = mongoose.model(
         type: String,
         required: true
       },
-      position: {
-        type: Number,
-        required: true
-      },
       board: {
         ref: 'boards',
         type: Schema.Types.ObjectId,
