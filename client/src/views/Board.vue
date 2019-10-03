@@ -1,7 +1,7 @@
 <template>
     <v-container v-if="board">
         <v-card>
-            <v-toolbar flat>
+            <v-toolbar dense flat>
                 <v-toolbar-title>
                     <v-text-field
                             v-if="isToolbarEdit"
@@ -34,7 +34,7 @@
                     </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
-            <v-toolbar flat>
+            <v-toolbar dense flat>
                 <v-toolbar-title class="body-2">
                     <v-text-field
                             v-if="isToolbarEdit"
@@ -46,9 +46,9 @@
                     <span v-else ><span class="font-weight-medium">Description: </span>{{board.descr}}</span>
                 </v-toolbar-title>
             </v-toolbar>
-            <v-row class="ma-3 grey lighten-5"
-                   align="start"
-                   justify="center">
+            <draggable v-model="boardColumns"
+                       @end="onDragEnd"
+                       class="ma-3 green lighten-5 d-flex justify-center align-start">
                 <board-column v-for="boardColumn in boardColumns" :key="boardColumn._id"
                               :column="boardColumn">
                 </board-column>
@@ -63,20 +63,23 @@
                        @click="isColumnAdd = true">
                     <v-icon>add</v-icon>
                 </v-btn>
-
-            </v-row>
-
+            </draggable>
         </v-card>
     </v-container>
 </template>
 
 <script>
   import gql from 'graphql-tag'
+  import Draggable from 'vuedraggable'
   import BoardColumn from "../components/boardColumn/BoardColumn";
   import BoardColumnCreate from "../components/boardColumn/BoardColumnCreate";
   export default {
     name: "Board",
-    components: {BoardColumnCreate, BoardColumn},
+    components: {
+      BoardColumnCreate,
+      BoardColumn,
+      Draggable
+    },
     props: {
       boardId: String
     },
@@ -109,6 +112,7 @@
             title
             descr
             columns {
+                _id
                 title
             }
           }
@@ -165,6 +169,42 @@
           ];
         }
         this.isColumnAdd=false
+      },
+      async onDragEnd() {
+        try {
+          const {data} = await this.$apollo.mutate({
+            mutation: gql`mutation ($boardId: ID! $columnIds: [ID!]!) {
+                dragColumnInBoard(
+                    boardId: $boardId
+                    columnIds: $columnIds
+                ) {
+                    columns {
+                        _id
+                        title
+                    }
+                  }
+                }`,
+            variables: {
+              boardId: this.boardId,
+              columnIds: this.boardColumns.map(({_id}) => _id)
+            },
+            watchLoading(isLoading) {
+              this.loading = isLoading
+            }
+          });
+          const {dragColumnInBoard} = data;
+          this.boardColumns = dragColumnInBoard.columns;
+          this.isToolbarEdit = false;
+        } catch (e) {
+          this.$apollo.mutate({
+            mutation: gql`mutation ($value: Boolean!) {
+                setError (value: $value) @client
+            }`,
+            variables: {
+              value: e.message,
+            }
+          });
+        }
       }
     }
   }

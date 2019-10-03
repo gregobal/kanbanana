@@ -23,6 +23,7 @@ module.exports = {
     try {
       return await Board
         .find(filter)
+        .sort({createdAt: -1})
         .populate('creator')
         .populate('project');
     } catch (e) {
@@ -54,6 +55,19 @@ module.exports = {
         },
         {new: true}
       );
+    } catch (e) {
+      throw new ApolloError(e)
+    }
+  },
+  dragColumnInBoard: async ({boardId, columnIds}) => {
+    try {
+      return Board.findOneAndUpdate(
+        {_id: boardId},
+        {
+          columns: columnIds
+        },
+        {new: true}
+      ).populate('columns');
     } catch (e) {
       throw new ApolloError(e)
     }
