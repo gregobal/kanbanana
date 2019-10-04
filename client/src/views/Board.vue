@@ -47,6 +47,7 @@
                 </v-toolbar-title>
             </v-toolbar>
             <draggable v-model="boardColumns"
+                       @start="onDragStart"
                        @end="onDragEnd"
                        class="ma-3 green lighten-5 d-flex justify-center align-start">
                 <board-column v-for="boardColumn in boardColumns" :key="boardColumn._id"
@@ -90,7 +91,8 @@
         isColumnAdd: false,
         title: null,
         descr: null,
-        boardColumns: []
+        boardColumns: [],
+        columnsOrderBeforeDrag: []
       }
     },
     watch: {
@@ -170,7 +172,19 @@
         }
         this.isColumnAdd=false
       },
+      onDragStart () {
+        this.columnsOrderBeforeDrag = this.boardColumns.map(({_id}) => _id)
+      },
       async onDragEnd() {
+        const columnsIds = this.boardColumns.map(({_id}) => _id);
+        let condition = true;
+        for (let i = 0; i < columnsIds.length; i++) {
+          if (columnsIds[i] !== this.columnsOrderBeforeDrag[i]) {
+            condition = false;
+            break
+          }
+        }
+        if (condition) return;
         try {
           const {data} = await this.$apollo.mutate({
             mutation: gql`mutation ($boardId: ID! $columnIds: [ID!]!) {
@@ -186,7 +200,7 @@
                 }`,
             variables: {
               boardId: this.boardId,
-              columnIds: this.boardColumns.map(({_id}) => _id)
+              columnIds: columnsIds
             },
             watchLoading(isLoading) {
               this.loading = isLoading

@@ -45,6 +45,7 @@
                     boardId: $boardId
                     title: $title
                 ) {
+                    _id
                     title
                   }
                 }`,
