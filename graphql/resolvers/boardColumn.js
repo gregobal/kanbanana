@@ -2,6 +2,7 @@ const {ApolloError} = require('apollo-server');
 
 const BoardColumn = require('../../models/BoardColumn');
 const Board = require('../../models/Board');
+const BoardTask = require('../../models/BoardTask');
 
 
 module.exports = {
@@ -16,13 +17,53 @@ module.exports = {
         title,
         board
       });
-      const result = await boardColumn.save();
+      await boardColumn.save();
       await board.updateOne(
         {
-          columns: [...columns, result]
+          columns: [...columns, boardColumn]
         }
       );
-      return result
+      return boardColumn
+    } catch (e) {
+      throw new ApolloError(e)
+    }
+  },
+  updateBoardColumn: async ({columnId, title}) => {
+    try {
+      return BoardColumn.findOneAndUpdate(
+        {_id: columnId},
+        {
+          title,
+        },
+        {new: true}
+      );
+    } catch (e) {
+      throw new ApolloError(e)
+    }
+  },
+  deleteBoardColumn: async ({columnId, boardId}) => {
+    try {
+      const board = await Board.findById(boardId);
+      board.columns.pull(columnId);
+      await board.save();
+      const column = await BoardColumn.findByIdAndRemove(columnId);
+      if ('tasks' in column) {
+        await BoardTask.deleteMany({_id: { $in: column.tasks }});
+      }
+      return column;
+    } catch (e) {
+      throw new ApolloError(e)
+    }
+  },
+  dragTaskInColumn: async ({columnId, taskIds}) => {
+    try {
+      return BoardColumn.findOneAndUpdate(
+        {_id: columnId},
+        {
+          tasks: taskIds
+        },
+        {new: true}
+      ).populate('tasks');
     } catch (e) {
       throw new ApolloError(e)
     }

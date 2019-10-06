@@ -66,9 +66,6 @@ export function createProvider (options = {}) {
   const apolloProvider = new VueApollo({
     defaultClient: apolloClient,
     defaultOptions: {
-      $watchQuery: {
-        fetchPolicy: 'cache-and-network'
-      },
       $query: {
         fetchPolicy: 'network-only'
       }
