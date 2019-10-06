@@ -3,24 +3,21 @@ const Schema = mongoose.Schema;
 
 
 module.exports = mongoose.model(
-  'board-columns',
+  'board-tasks',
   Schema(
     {
       title: {
         type: String,
         required: true
       },
-      board: {
-        ref: 'boards',
+      color: {
+        type: String
+      },
+      column: {
+        ref: 'board-columns',
         type: Schema.Types.ObjectId,
         required: true
-      },
-      tasks: [
-        {
-          ref: 'board-tasks',
-          type: Schema.Types.ObjectId
-        }
-      ]
+      }
     },
     {timestamps: true}
   )

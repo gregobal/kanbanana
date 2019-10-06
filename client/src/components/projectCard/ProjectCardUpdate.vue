@@ -25,7 +25,7 @@
                    text>
                 Save
             </v-btn>
-            <v-btn @click="$emit('edit-close')"
+            <v-btn @click="$emit('update')"
                    text>
                 Cancel
             </v-btn>
@@ -43,9 +43,8 @@
     data () {
       return {
         loading: false,
-        title: this.project && this.project.title || null,
-        descr: this.project && this.project.descr || null,
-        updatedAt: this.project && this.project.updatedAt || null
+        title: this.project ? this.project.title : null,
+        descr: this.project ? this.project.descr : null
       }
     },
     methods: {
@@ -63,7 +62,7 @@
                     _id
                     title
                     descr
-                    updatedAt
+                    createdAt
                   }
                 }`,
               variables: {
@@ -85,7 +84,7 @@
                     _id
                     title
                     descr
-                    updatedAt
+                    createdAt
                   }
                 }`,
               variables: {
@@ -98,7 +97,7 @@
             });
           }
           const {data} = result;
-          this.$emit('edit-close', data)
+          this.$emit('update', data)
         } catch (e) {
           this.$apollo.mutate({
             mutation: gql`mutation ($value: Boolean!) {

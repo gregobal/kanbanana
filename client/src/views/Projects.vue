@@ -7,7 +7,7 @@
         <v-row align="start" justify="start">
             <v-col cols="2" class="text-center">
                 <project-card-update v-if="isAdd"
-                                     @edit-close="onUpdate">
+                                     @update="onUpdate">
                 </project-card-update>
                 <v-card v-else
                         color="transparent" flat

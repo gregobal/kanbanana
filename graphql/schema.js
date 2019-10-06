@@ -55,6 +55,36 @@ module.exports = gql`
             boardId: ID!            
             title: String!            
         ):BoardColumn!
+
+        updateBoardColumn(
+            columnId: ID!
+            title: String!
+        ):BoardColumn!
+
+        deleteBoardColumn(            
+            columnId: ID!
+            boardId: ID!
+        ):BoardColumn!
+
+        dragTaskInColumn(
+            columnId: ID!
+            taskIds: [ID]!
+        ):BoardColumn!
+
+        createBoardTask(
+            columnId: ID!
+            title: String!
+        ):BoardTask!
+
+        updateBoardTask(
+            taskId: ID!
+            title: String!            
+        ):BoardTask!
+
+        deleteBoardTask(
+            taskId: ID!
+            columnId: ID!
+        ):BoardTask!
     }
     
     type Hello {
@@ -93,9 +123,13 @@ module.exports = gql`
         _id: ID!        
         title: String!
         board: Board!
+        tasks: [BoardTask]
     }
     
     type BoardTask {
         _id: ID!
+        title: String!
+        color: String
+        column: BoardColumn!
     }
 `;

@@ -4,6 +4,7 @@ const user = require('./user');
 const board = require('./board');
 const project = require('./project');
 const boardColumn = require('./boardColumn');
+const boardTask = require('./boardTask');
 
 
 module.exports = {
@@ -61,6 +62,30 @@ module.exports = {
     createBoardColumn: (_, args, {isAuth}) => {
       authGuard(isAuth);
       return boardColumn.createBoardColumn(args)
+    },
+    updateBoardColumn: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardColumn.updateBoardColumn(args)
+    },
+    deleteBoardColumn: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardColumn.deleteBoardColumn(args)
+    },
+    dragTaskInColumn: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardColumn.dragTaskInColumn(args)
+    },
+    createBoardTask: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardTask.createBoardTask(args)
+    },
+    updateBoardTask: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardTask.updateBoardTask(args)
+    },
+    deleteBoardTask: (_, args, {isAuth}) => {
+      authGuard(isAuth);
+      return boardTask.deleteBoardTask(args)
     }
   }
 };

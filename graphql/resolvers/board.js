@@ -10,7 +10,10 @@ module.exports = {
     try {
       return await Board.findById(boardId)
         .populate('project')
-        .populate('columns');
+        .populate({
+            path: 'columns',
+              populate: { path: 'tasks' }
+        });
     } catch (e) {
       throw new ApolloError(e)
     }
@@ -67,7 +70,10 @@ module.exports = {
           columns: columnIds
         },
         {new: true}
-      ).populate('columns');
+      ).populate({
+        path: 'columns',
+        populate: { path: 'tasks' }
+      });
     } catch (e) {
       throw new ApolloError(e)
     }

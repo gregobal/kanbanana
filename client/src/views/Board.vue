@@ -47,22 +47,29 @@
                 </v-toolbar-title>
             </v-toolbar>
             <draggable v-model="boardColumns"
-                       @start="onDragStart"
-                       @end="onDragEnd"
+                       handle=".column-handle"
+                       @start="onColumnDragStart"
+                       @end="onColumnDragEnd"
                        class="ma-3 green lighten-5 d-flex justify-center align-start">
                 <board-column v-for="boardColumn in boardColumns" :key="boardColumn._id"
-                              :column="boardColumn">
+                              :column="boardColumn"
+                              :board-id="board._id || boardId"
+                              @update="onColumnUpdate"
+                              @task-update="onTaskInColumnUpdate"
+                              @task-drag="onTaskDrag">
                 </board-column>
-                <board-column-create v-if="isColumnAdd"
-                                     :board-id="board._id || boardId"
-                                     @create-close="onCloseCreateColumn">
-                </board-column-create>
+                <v-col cols="2" v-if="isColumnAdd">
+                    <board-column-update :board-id="board._id || boardId"
+                                         @update="onColumnUpdate">
+                    </board-column-update>
+                </v-col>
                 <v-btn v-if="!isColumnAdd && boardColumns.length < 6"
-                       class="ma-6"
-                       fab small outlined
+                       class="my-3 ml-2"
+                       color="success"
+                       fab large outlined
                        :loading="loading"
                        @click="isColumnAdd = true">
-                    <v-icon>add</v-icon>
+                    <v-icon large>add</v-icon>
                 </v-btn>
             </draggable>
         </v-card>
@@ -73,11 +80,11 @@
   import gql from 'graphql-tag'
   import Draggable from 'vuedraggable'
   import BoardColumn from "../components/boardColumn/BoardColumn";
-  import BoardColumnCreate from "../components/boardColumn/BoardColumnCreate";
+  import BoardColumnUpdate from "../components/boardColumn/BoardColumnUpdate";
   export default {
     name: "Board",
     components: {
-      BoardColumnCreate,
+      BoardColumnUpdate,
       BoardColumn,
       Draggable
     },
@@ -95,17 +102,6 @@
         columnsOrderBeforeDrag: []
       }
     },
-    watch: {
-      board: function (newVal) {
-        if (newVal) {
-          this.title = newVal.title;
-          this.descr = newVal.descr;
-          if (newVal.columns) {
-            this.boardColumns = newVal.columns;
-          }
-        }
-      }
-    },
     apollo: {
       board: {
         query: gql`query ($boardId: ID!) {
@@ -116,12 +112,26 @@
             columns {
                 _id
                 title
+                tasks {
+                    _id
+                    title
+                }
             }
           }
         }`,
         variables () {
           return {
             boardId: this.boardId
+          }
+        },
+        result ({ data }) {
+          const {board} = data;
+          if (board) {
+            this.title = board.title;
+            this.descr = board.descr;
+            if (board.columns) {
+              this.boardColumns = board.columns;
+            }
           }
         }
       }
@@ -163,23 +173,33 @@
           });
         }
       },
-      onCloseCreateColumn(data) {
-        if (data && data.createBoardColumn) {
-          this.boardColumns = [
-            ...this.boardColumns,
-            data.createBoardColumn
-          ];
+      onColumnUpdate(data) {
+        if (data) {
+          const {createBoardColumn, updateBoardColumn, deleteBoardColumn} = data;
+          if (createBoardColumn) {
+            this.boardColumns.push(createBoardColumn);
+          } else if (updateBoardColumn) {
+            this.boardColumns.some(column => {
+              if (column._id === updateBoardColumn._id) {
+                column.title = updateBoardColumn.title;
+                return true
+              }
+            })
+          } else if (deleteBoardColumn) {
+            const idx = this.boardColumns.findIndex(({_id}) => _id === deleteBoardColumn._id);
+            this.boardColumns.splice(idx, 1);
+          }
         }
         this.isColumnAdd=false
       },
-      onDragStart () {
+      onColumnDragStart () {
         this.columnsOrderBeforeDrag = this.boardColumns.map(({_id}) => _id)
       },
-      async onDragEnd() {
-        const columnsIds = this.boardColumns.map(({_id}) => _id);
+      async onColumnDragEnd() {
+        const columnIds = this.boardColumns.map(({_id}) => _id);
         let condition = true;
-        for (let i = 0; i < columnsIds.length; i++) {
-          if (columnsIds[i] !== this.columnsOrderBeforeDrag[i]) {
+        for (let i = 0; i < columnIds.length; i++) {
+          if (columnIds[i] !== this.columnsOrderBeforeDrag[i]) {
             condition = false;
             break
           }
@@ -195,12 +215,16 @@
                     columns {
                         _id
                         title
+                        tasks {
+                            _id
+                            title
+                        }
                     }
                   }
                 }`,
             variables: {
               boardId: this.boardId,
-              columnIds: columnsIds
+              columnIds: columnIds
             },
             watchLoading(isLoading) {
               this.loading = isLoading
@@ -208,7 +232,6 @@
           });
           const {dragColumnInBoard} = data;
           this.boardColumns = dragColumnInBoard.columns;
-          this.isToolbarEdit = false;
         } catch (e) {
           this.$apollo.mutate({
             mutation: gql`mutation ($value: Boolean!) {
@@ -218,6 +241,50 @@
               value: e.message,
             }
           });
+        }
+      },
+      onTaskDrag (data) {
+        const {dragTaskInColumn} = data;
+        if (dragTaskInColumn) {
+          this.boardColumns.some(column => {
+            if (column._id === dragTaskInColumn._id) {
+              column.tasks = dragTaskInColumn.tasks
+              return true
+            }
+          })
+        }
+      },
+      onTaskInColumnUpdate (data) {
+        const {createBoardTask, updateBoardTask, deleteBoardTask} = data;
+        if (createBoardTask) {
+          this.boardColumns.some(column => {
+            if (column._id === createBoardTask.column._id) {
+              const tasks = column.tasks ? column.tasks : [];
+              tasks.push(createBoardTask);
+              column.tasks = tasks;
+              return true
+            }
+          })
+        } else if (updateBoardTask) {
+          this.boardColumns.some(column => {
+            if (column._id === updateBoardTask.column._id && column.tasks) {
+              column.tasks.some(task => {
+                if (task._id === updateBoardTask._id) {
+                  task.title = updateBoardTask.title;
+                  return true
+                }
+              });
+              return true
+            }
+          })
+        } else if (deleteBoardTask) {
+          this.boardColumns.some(column => {
+            if (column._id === deleteBoardTask.column._id) {
+              const idx = column.tasks.findIndex(({_id}) => _id === deleteBoardTask._id);
+              column.tasks.splice(idx, 1);
+              return true
+            }
+          })
         }
       }
     }
