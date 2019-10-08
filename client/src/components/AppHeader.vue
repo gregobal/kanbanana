@@ -14,28 +14,12 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   export default {
     name: "Header",
-    watch: {
-      user: async function (newUser) {
-        await this.$apollo.mutate({
-          mutation: gql`mutation ($value: Boolean!) {
-                  setIsAuth (value: $value) @client
-              }`,
-          variables: {
-            value: !!newUser,
-          }
-        });
+    computed: {
+      user: function () {
+        return this.$store.state.user
       }
-    },
-    apollo: {
-      user: gql`query {
-        user {
-            email,
-            name
-        }
-      }`
     }
   }
 </script>

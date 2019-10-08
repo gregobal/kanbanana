@@ -64,7 +64,7 @@
     methods: {
       async login() {
         try {
-          const result = await this.$apollo.mutate({
+          const {data} = await this.$apollo.mutate({
             mutation: gql`
                 mutation ($email: String!, $password: String!) {
                     login(
@@ -72,6 +72,10 @@
                         password: $password
                     ) {
                         token
+                        user {
+                            name
+                            email
+                        }
                     }
             }`,
             variables: {
@@ -79,31 +83,14 @@
               password: this.password
             }
           });
-          const {data} = result;
-          if (data && data.login) {
+          const {login} = data;
+          if (login && login.token && login.user) {
             await onLogin(this.$apollo.provider.defaultClient, data.login.token);
-            await this.$apollo.mutate({
-              mutation: gql`mutation ($value: Boolean!) {
-                  setIsAuth (value: $value) @client
-              }`,
-              variables: {
-                value: true,
-              }
-            });
+            this.$store.commit('setUser', login.user);
             this.createUser ? this.$router.push('/') : this.$router.back()
-          } else {
-            const {errors} = result;
-            throw new Error(errors[0])
           }
         } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
+          console.error(e)
         }
       }
     }

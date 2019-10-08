@@ -12,34 +12,24 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   export default {
-    name: "ErrorHandler",
+    name: "AppErrorHandler",
+    props: {
+      error: Error || Object
+    },
     data() {
       return {
         snackbar: false,
         errorMessage: null
       }
     },
-    apollo: {
-      error: gql`query {
-          error @client
-      }`,
-    },
     watch: {
       error: async function () {
         if (this.error) {
-          this.errorMessage = this.error;
+          this.errorMessage = this.error.message;
           this.snackbar = true;
-          if (this.error === 'GraphQL error: You must be logged in.') {
-            await this.$apollo.mutate({
-              mutation: gql`mutation ($value: Boolean!) {
-                setIsAuth (value: $value) @client
-              }`,
-              variables: {
-                value: false,
-              }
-            });
+          if (this.error.message === 'GraphQL error: You must be logged in.') {
+            this.$store.commit('setUser', null);
             this.$route.name !== 'login' && this.$router.push('login')
           }
         }
@@ -47,14 +37,7 @@
       snackbar: function (newSnackbar) {
         if (!newSnackbar) {
           this.errorMessage = null;
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: this.errorMessage,
-            },
-          });
+          this.$store.commit('setError', null);
         }
       }
     }

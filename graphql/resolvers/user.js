@@ -61,6 +61,9 @@ module.exports = {
       jwtKey,
       {expiresIn: 3600}
     );
-    return {token: token}
+    return {
+      token,
+      user
+    }
   }
 };

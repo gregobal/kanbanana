@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center" v-if="loading">
+    <div class="text-center">
         <v-overlay>
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
@@ -7,14 +7,8 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   export default {
-    name: "Loader",
-    apollo: {
-      loading: gql`query {
-          loading @client
-      }`,
-    }
+    name: "Loader"
   }
 </script>
 

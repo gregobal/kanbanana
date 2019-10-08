@@ -93,6 +93,7 @@ module.exports = gql`
 
     type AuthData {
         token: String!
+        user: User!
     }
 
     type User {
