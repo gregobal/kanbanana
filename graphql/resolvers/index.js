@@ -9,8 +9,7 @@ const boardTask = require('./boardTask');
 
 module.exports = {
   Query: {
-    hello: (_, __, {isAuth}) => {
-      authGuard(isAuth);
+    hello: () => {
       return {message: 'Hello from Kanbanana GraphQL API!'}
     },
     user: (_, __, {isAuth, userId}) => {

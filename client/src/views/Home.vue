@@ -17,7 +17,7 @@
         <router-link to="/projects">Just do it.</router-link>
       </h2>
     </v-row>
-    <v-row justify="center" v-if="!isAuth">
+    <v-row justify="center" v-if="!user">
       <h2 class="subtitle-2">
         Not a member - <router-link to="/register">register</router-link> now.
       </h2>
@@ -26,13 +26,12 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
 export default {
   name: "Home",
-  apollo: {
-    isAuth: gql`query {
-          isAuth @client
-      }`,
-  },
+  computed: {
+    user: function () {
+      return this.$store.state.user
+    }
+  }
 };
 </script>
