@@ -31,9 +31,10 @@ export function createProvider () {
       // eslint-disable-next-line no-console
       console.log('%cError', 'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;', error.message)
     },
-    watchLoading (isLoading) {
-      store.commit('setLoading', isLoading)
-    },
+    // // global query loading handler
+    // watchLoading (isLoading) {
+    //   store.commit('setLoading', isLoading)
+    // },
   });
 }
 

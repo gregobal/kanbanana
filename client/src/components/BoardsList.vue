@@ -71,6 +71,7 @@
     },
     methods: {
       async onSave() {
+        this.loading = true;
         try {
           const {data} = await this.$apollo.mutate({
             mutation: gql`mutation ($projectId: ID! $title: String!) {
@@ -85,25 +86,17 @@
             variables: {
               projectId: this.projectId,
               title: this.title
-            },
-            watchLoading(isLoading) {
-              this.loading = isLoading
             }
           });
           const {createBoard} = data;
           this.boards.push(createBoard);
           this.isAdd = false;
           this.title = null
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
+        } catch (error) {
+          this.$store.commit('setError', error);
+          console.error(error)
         }
+        this.loading = false;
       }
     }
   }
