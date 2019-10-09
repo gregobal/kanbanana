@@ -43,12 +43,13 @@
     data () {
       return {
         loading: false,
-        title: this.project ? this.project.title : null,
-        descr: this.project ? this.project.descr : null
+        title: this.project && this.project.title || null,
+        descr: this.project && this.project.descr || null
       }
     },
     methods: {
       async onSave() {
+        this.loading = true;
         let result;
         try {
           if (this.project && this.project._id) {
@@ -69,9 +70,6 @@
                 projectId: this.project._id,
                 title: this.title,
                 descr: this.descr
-              },
-              watchLoading(isLoading) {
-                this.loading = isLoading
               }
             })
           } else {
@@ -90,24 +88,16 @@
               variables: {
                 title: this.title,
                 descr: this.descr
-              },
-              watchLoading(isLoading) {
-                this.loading = isLoading
               }
             });
           }
           const {data} = result;
           this.$emit('update', data)
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
+        } catch (error) {
+          this.$store.commit('setError', error);
+          console.error(error)
         }
+        this.loading = false;
       }
     }
   }

@@ -2,7 +2,7 @@
     <div>
         <project-card-update v-if="isEdit"
                              :project="project"
-                             @edit-close="onUpdate">
+                             @update="onUpdate">
         </project-card-update>
         <v-card min-height="240" v-else>
             <v-card-title class="green lighten-5">

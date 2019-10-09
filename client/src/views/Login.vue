@@ -30,6 +30,7 @@
                         <v-card-actions>
                             <div class="flex-grow-1"></div>
                             <v-btn large
+                                   :loading="loading"
                                    @click="login">
                                 <span class="mx-5">Login</span>
                             </v-btn>
@@ -57,12 +58,14 @@
     },
     data() {
       return {
+        loading: false,
         email: this.createUser && this.createUser.email || null,
         password: null
       }
     },
     methods: {
       async login() {
+        this.loading = true;
         try {
           const {data} = await this.$apollo.mutate({
             mutation: gql`
@@ -84,14 +87,14 @@
             }
           });
           const {login} = data;
-          if (login && login.token && login.user) {
-            await onLogin(this.$apollo.provider.defaultClient, data.login.token);
-            this.$store.commit('setUser', login.user);
-            this.createUser ? this.$router.push('/') : this.$router.back()
-          }
-        } catch (e) {
-          console.error(e)
+          await onLogin(this.$apollo.provider.defaultClient, data.login.token);
+          this.$store.commit('setUser', login.user);
+          this.createUser ? this.$router.push('/') : this.$router.back()
+        } catch (error) {
+          this.$store.commit('setError', error);
+          console.error(error)
         }
+        this.loading = false;
       }
     }
   }

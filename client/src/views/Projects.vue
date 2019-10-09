@@ -12,8 +12,7 @@
                 <v-card v-else
                         color="transparent" flat
                         height="240">
-                    <v-btn
-                           @click="isAdd = true"
+                    <v-btn @click="isAdd = true"
                            style="margin-top: 80px"
                            color="success"
                            fab x-large outlined>
@@ -55,6 +54,9 @@
             createdAt
           }
         }`,
+        watchLoading (isLoading) {
+          this.$store.commit('setLoading', isLoading)
+        }
       }
     },
     methods: {

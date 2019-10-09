@@ -42,9 +42,7 @@ export default {
       }`,
       result({data}) {
         const {user} = data;
-        if (user) {
-          this.$store.commit('setUser', data.user)
-        }
+        this.$store.commit('setUser', data.user)
       }
     }
   }

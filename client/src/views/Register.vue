@@ -35,6 +35,7 @@
                         <v-card-actions>
                             <div class="flex-grow-1"></div>
                             <v-btn large
+                                   :loading="loading"
                                    @click="register">
                                 <span class="mx-5">Register</span>
                             </v-btn>
@@ -51,12 +52,14 @@
   export default {
     name: "Register",
     data: () => ({
+      loading: false,
       email: null,
       password: null,
       name: null
     }),
     methods: {
       async register() {
+        this.loading = true;
         try {
           const result = await this.$apollo.mutate({
             mutation: gql`
@@ -76,30 +79,20 @@
             }
           });
           const {data} = result;
-          if (data && data.createUser) {
-            this.$router.push({
-              name: 'login',
-              params: {
-                createUser: {
-                  ...data.createUser,
-                  message: 'Now you can log in using your data.'
-                }
+          this.$router.push({
+            name: 'login',
+            params: {
+              createUser: {
+                ...data.createUser,
+                message: 'Now you can log in using your data.'
               }
-            })
-          } else {
-            const {errors} = result;
-            throw new Error(errors[0])
-          }
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
             }
-          });
+          })
+        } catch (error) {
+          this.$store.commit('setError', error);
+          console.error(error)
         }
+        this.loading = false;
       }
     }
   }
