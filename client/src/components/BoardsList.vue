@@ -37,7 +37,8 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
+  import {GET_BOARDS} from "../graphql/queries";
+  import {CREATE_BOARD} from "../graphql/mutations";
   export default {
     name: "BoardsList",
     props: {
@@ -53,12 +54,7 @@
     },
     apollo: {
       boards: {
-        query: gql`query ($projectId: ID!) {
-          boards (projectId: $projectId) {
-            _id
-            title
-          }
-        }`,
+        query: GET_BOARDS,
         variables () {
           return {
             projectId: this.projectId
@@ -74,15 +70,7 @@
         this.loading = true;
         try {
           const {data} = await this.$apollo.mutate({
-            mutation: gql`mutation ($projectId: ID! $title: String!) {
-                createBoard(
-                    projectId: $projectId
-                    title: $title
-                ) {
-                    _id
-                    title
-                  }
-                }`,
+            mutation: CREATE_BOARD,
             variables: {
               projectId: this.projectId,
               title: this.title

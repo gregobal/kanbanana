@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
+  import {CREATE_PROJECT, UPDATE_PROJECT} from "../../graphql/mutations";
   export default {
     name: "ProjectCardUpdate",
     props: {
@@ -54,18 +54,7 @@
         try {
           if (this.project && this.project._id) {
             result = await this.$apollo.mutate({
-              mutation: gql`mutation ($projectId: ID!, $title: String!, $descr: String) {
-                updateProject(
-                    projectId: $projectId
-                    title: $title
-                    descr: $descr
-                ) {
-                    _id
-                    title
-                    descr
-                    createdAt
-                  }
-                }`,
+              mutation: UPDATE_PROJECT,
               variables: {
                 projectId: this.project._id,
                 title: this.title,
@@ -74,17 +63,7 @@
             })
           } else {
             result = await this.$apollo.mutate({
-              mutation: gql`mutation ($title: String!, $descr: String) {
-                createProject(
-                    title: $title
-                    descr: $descr
-                ) {
-                    _id
-                    title
-                    descr
-                    createdAt
-                  }
-                }`,
+              mutation: CREATE_PROJECT,
               variables: {
                 title: this.title,
                 descr: this.descr

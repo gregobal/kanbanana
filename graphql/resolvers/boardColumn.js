@@ -55,7 +55,7 @@ module.exports = {
       throw new ApolloError(e)
     }
   },
-  dragTaskInColumn: async ({columnId, taskIds}) => {
+  dragTaskInColumns: async ({columnId, taskIds}) => {
     try {
       return BoardColumn.findOneAndUpdate(
         {_id: columnId},

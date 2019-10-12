@@ -4,7 +4,7 @@
             <board-column-update v-if="isUpdate"
                                  :column="column"
                                  :board-id="boardId"
-                                 @update="onUpdate">
+                                 @update="isUpdate=false">
             </board-column-update>
             <v-card-title class="column-handle" style="cursor: move" v-else>
                 <v-col class="text-truncate pa-0" cols="10">{{column.title}}</v-col>
@@ -19,19 +19,17 @@
                 <draggable v-model="tasks"
                            group="task"
                            handle=".task-handle"
-                           @start="onTaskDragStart"
-                           @end="onTaskDragEnd"
-                           @add="onTaskDragAdd"
+                           @end="onTaskDrag"
+                           @add="onTaskDrag"
                 >
                     <board-task v-for="task in tasks" :key="task._id"
                                 :task="task"
-                                :column-id="column._id"
-                                @update="onTaskUpdate">
+                                :column-id="column._id">
                     </board-task>
                 </draggable>
                 <board-task v-if="isAddTask"
                             :column-id="column._id"
-                            @update="onTaskUpdate">
+                            @add="isAddTask = false">
                 </board-task>
                 <div class="text-center">
                     <v-btn @click="isAddTask=true"
@@ -47,7 +45,6 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   import Draggable from 'vuedraggable'
   import BoardTask from '../BoardTask';
   import BoardColumnUpdate from "./BoardColumnUpdate";
@@ -77,72 +74,9 @@
       }
     },
     methods: {
-      onTaskUpdate (data) {
-        if (data) {
-          this.$emit('task-update', data)
-        }
-        this.isAddTask = false
-      },
-      onUpdate (data) {
-        this.isUpdate=false;
-        this.$emit('update', data)
-      },
-      onTaskDragStart () {
-        this.tasksOrderBeforeDrag = this.tasks.map(({_id}) => _id)
-      },
-      async onTaskDragEnd () {
-        await this.onTaskDragUpdate('end')
-      },
-      async onTaskDragAdd () {
-        await this.onTaskDragUpdate('add')
-      },
-      async onTaskDragUpdate (act) {
+      async onTaskDrag () {
         const taskIds = this.tasks.map(({_id}) => _id);
-        if (taskIds.length && taskIds.length === this.tasksOrderBeforeDrag.length) {
-          let condition = true;
-          for (let i = 0; i < taskIds.length; i++) {
-            if (taskIds[i] !== this.tasksOrderBeforeDrag[i]) {
-              condition = false;
-              break
-            }
-          }
-          if (condition) return;
-        }
-        try {
-          const {data} = await this.$apollo.mutate({
-            mutation: gql`mutation ($columnId: ID! $taskIds: [ID]!) {
-                dragTaskInColumn(
-                    columnId: $columnId
-                    taskIds: $taskIds
-                ) {
-                  _id
-                  title
-                  tasks {
-                      _id
-                      title
-                      }
-                  }
-                }`,
-            variables: {
-              columnId: this.column._id,
-              taskIds: taskIds
-            },
-            watchLoading(isLoading) {
-              this.loading = isLoading
-            }
-          });
-          this.$emit('task-drag', data, act);
-          this.tasksOrderBeforeDrag = []
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
-        }
+        await this.$store.dispatch('dragTaskInColumns', {columnId: this.column._id, taskIds: taskIds})
       }
     }
   }

@@ -48,9 +48,8 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   import {onLogin} from '../vue-apollo'
-
+  import {LOGIN} from "../graphql/mutations";
   export default {
     name: "Login",
     props: {
@@ -68,19 +67,7 @@
         this.loading = true;
         try {
           const {data} = await this.$apollo.mutate({
-            mutation: gql`
-                mutation ($email: String!, $password: String!) {
-                    login(
-                        email: $email
-                        password: $password
-                    ) {
-                        token
-                        user {
-                            name
-                            email
-                        }
-                    }
-            }`,
+            mutation: LOGIN,
             variables: {
               email: this.email,
               password: this.password

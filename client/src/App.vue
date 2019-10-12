@@ -41,7 +41,6 @@ export default {
         }
       }`,
       result({data}) {
-        const {user} = data;
         this.$store.commit('setUser', data.user)
       }
     }

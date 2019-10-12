@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import { apolloClient } from './vue-apollo'
-// import gql from 'graphql-tag'
+
+import board from './board'
+
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { },
+  modules: {
+    board
+  },
   state: {
     user: null,
     loading: false,
@@ -22,6 +25,5 @@ export default new Vuex.Store({
     setError (state, payload) {
       state.error = payload
     }
-  },
-  actions: { }
+  }
 })

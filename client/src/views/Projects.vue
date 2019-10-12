@@ -32,9 +32,9 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   import ProjectCard from "../components/projectCard/ProjectCard";
   import ProjectCardUpdate from "../components/projectCard/ProjectCardUpdate";
+  import {GET_PROJECTS} from "../graphql/queries";
   export default {
     name: "Projects",
     components: {ProjectCardUpdate, ProjectCard},
@@ -46,14 +46,7 @@
     },
     apollo: {
       projects: {
-        query: gql`query {
-          projects {
-            _id
-            title
-            descr
-            createdAt
-          }
-        }`,
+        query: GET_PROJECTS,
         watchLoading (isLoading) {
           this.$store.commit('setLoading', isLoading)
         }
