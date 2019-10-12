@@ -9,8 +9,7 @@ module.exports = {
     try {
       const column = await BoardColumn.findById(columnId);
       const boardTask = new BoardTask({
-        title,
-        column
+        title
       });
       await boardTask.save();
       column.tasks.push(boardTask);

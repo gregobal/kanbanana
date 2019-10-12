@@ -70,9 +70,9 @@ module.exports = {
       authGuard(isAuth);
       return boardColumn.deleteBoardColumn(args)
     },
-    dragTaskInColumn: (_, args, {isAuth}) => {
+    dragTaskInColumns: (_, args, {isAuth}) => {
       authGuard(isAuth);
-      return boardColumn.dragTaskInColumn(args)
+      return boardColumn.dragTaskInColumns(args)
     },
     createBoardTask: (_, args, {isAuth}) => {
       authGuard(isAuth);

@@ -23,7 +23,7 @@
                         </v-btn>
                         <v-btn fab x-small outlined
                                :loading="loading"
-                               @click="isToolbarEdit = false">
+                               @click="onCancel">
                             <v-icon small>cancel</v-icon>
                         </v-btn>
                     </span>
@@ -53,14 +53,11 @@
                        class="ma-3 green lighten-5 d-flex justify-center align-start">
                 <board-column v-for="column in columns" :key="column._id"
                               :column="column"
-                              :board-id="board._id || boardId"
-                              @update="onColumnUpdate"
-                              @task-update="onTaskInColumnUpdate"
-                              @task-drag="onTaskDrag">
+                              :board-id="boardId">
                 </board-column>
                 <v-col cols="2" v-if="isColumnAdd">
                     <board-column-update :board-id="boardId"
-                                         @update="onColumnUpdate">
+                                         @update="isColumnAdd=false">
                     </board-column-update>
                 </v-col>
                 <v-btn v-if="!isColumnAdd && columns.length < 6"
@@ -77,7 +74,6 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   import Draggable from 'vuedraggable'
   import BoardColumn from "../components/boardColumn/BoardColumn";
   import BoardColumnUpdate from "../components/boardColumn/BoardColumnUpdate";
@@ -120,7 +116,7 @@
       this.$store.dispatch('getBoardFromApi', this.boardId)
     },
     methods: {
-      async onSave() {
+      async onSave () {
         await this.$store.dispatch('updateBoard', {
           boardId: this.boardId,
           title: this.title,
@@ -128,24 +124,10 @@
         });
         this.isToolbarEdit = false;
       },
-      onColumnUpdate(data) {
-        if (data) {
-          const {createBoardColumn, updateBoardColumn, deleteBoardColumn} = data;
-          if (createBoardColumn) {
-            this.boardColumns.push(createBoardColumn);
-          } else if (updateBoardColumn) {
-            this.boardColumns.some(column => {
-              if (column._id === updateBoardColumn._id) {
-                column.title = updateBoardColumn.title;
-                return true
-              }
-            })
-          } else if (deleteBoardColumn) {
-            const idx = this.boardColumns.findIndex(({_id}) => _id === deleteBoardColumn._id);
-            this.boardColumns.splice(idx, 1);
-          }
-        }
-        this.isColumnAdd=false
+      onCancel () {
+        this.title = this.board.title;
+        this.descr = this.board.descr;
+        this.isToolbarEdit = false
       },
       onColumnDragStart () {
         this.columnsOrderBeforeDrag = this.columns.map(({_id}) => _id)
@@ -161,50 +143,6 @@
         }
         if (condition) return;
         await this.$store.dispatch('dragColumnInBoard', {boardId: this.boardId, columnIds})
-      },
-      onTaskDrag (data) {
-        const {dragTaskInColumn} = data;
-        if (dragTaskInColumn) {
-          this.boardColumns.some(column => {
-            if (column._id === dragTaskInColumn._id) {
-              column.tasks = dragTaskInColumn.tasks;
-              return true
-            }
-          })
-        }
-      },
-      onTaskInColumnUpdate (data) {
-        const {createBoardTask, updateBoardTask, deleteBoardTask} = data;
-        if (createBoardTask) {
-          this.boardColumns.some(column => {
-            if (column._id === createBoardTask.column._id) {
-              const tasks = column.tasks ? column.tasks : [];
-              tasks.push(createBoardTask);
-              column.tasks = tasks;
-              return true
-            }
-          })
-        } else if (updateBoardTask) {
-          this.boardColumns.some(column => {
-            if (column._id === updateBoardTask.column._id && column.tasks) {
-              column.tasks.some(task => {
-                if (task._id === updateBoardTask._id) {
-                  task.title = updateBoardTask.title;
-                  return true
-                }
-              });
-              return true
-            }
-          })
-        } else if (deleteBoardTask) {
-          this.boardColumns.some(column => {
-            if (column._id === deleteBoardTask.column._id) {
-              const idx = column.tasks.findIndex(({_id}) => _id === deleteBoardTask._id);
-              column.tasks.splice(idx, 1);
-              return true
-            }
-          })
-        }
       }
     }
   }

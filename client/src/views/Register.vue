@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
+  import {REGISTER} from "../graphql/mutations";
   export default {
     name: "Register",
     data: () => ({
@@ -62,16 +62,7 @@
         this.loading = true;
         try {
           const result = await this.$apollo.mutate({
-            mutation: gql`
-                mutation ($email: String!, $password: String!, $name: String) {
-                    createUser(
-                        email: $email
-                        password: $password
-                        name: $name
-                    ) {
-                        email
-                    }
-            }`,
+            mutation: REGISTER,
             variables: {
               email: this.email,
               password: this.password,

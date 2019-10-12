@@ -12,11 +12,6 @@ module.exports = mongoose.model(
       },
       color: {
         type: String
-      },
-      column: {
-        ref: 'board-columns',
-        type: Schema.Types.ObjectId,
-        required: true
       }
     },
     {timestamps: true}

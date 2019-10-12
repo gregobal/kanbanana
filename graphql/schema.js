@@ -66,7 +66,7 @@ module.exports = gql`
             boardId: ID!
         ):BoardColumn!
 
-        dragTaskInColumn(
+        dragTaskInColumns(
             columnId: ID!
             taskIds: [ID]!
         ):BoardColumn!
@@ -130,7 +130,6 @@ module.exports = gql`
     type BoardTask {
         _id: ID!
         title: String!
-        color: String
-        column: BoardColumn!
+        color: String        
     }
 `;

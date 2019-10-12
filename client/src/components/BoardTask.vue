@@ -1,18 +1,21 @@
 <template>
     <v-card class="ma-1 red lighten-3">
-        <v-card-title class="pa-2 task-handle" style="cursor: move" v-if="!isUpdate">
+        <v-card-title class="pa-2 task-handle" style="cursor: move" v-if="!isUpdate && !loading">
             <v-icon @click="isUpdate=true"
                     small>
                 edit
             </v-icon>
             <div class="flex-grow-1" style="cursor: move"></div>
-            <v-icon v-if="!loading"
-                    @click="onDelete"
+            <v-icon @click="onDelete"
                     class="ml-1"
                     color="red"
                     small>
                 delete
             </v-icon>
+        </v-card-title>
+        <v-card-title class="pa-2" v-if="!isUpdate && loading">
+            <v-icon small>update</v-icon>
+            <div class="flex-grow-1" style="cursor: move"></div>
         </v-card-title>
         <v-card-text class="py-1">
             <v-textarea
@@ -20,7 +23,7 @@
                     v-model.trim="title"
                     class="mb-0 py-0"
                     auto-grow
-                    rows="3"
+                    rows="2"
                     clearable
                     hide-details
             ></v-textarea>
@@ -36,6 +39,7 @@
                 Save
             </v-btn>
             <v-btn @click="onCancel"
+                   :loading="loading"
                    text small>
                 Cancel
             </v-btn>
@@ -44,7 +48,6 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   export default {
     name: "BoardTask",
     props: {
@@ -60,105 +63,23 @@
     },
     methods: {
       async onSave () {
-        let result;
-        try {
-          if (this.task && this.task._id) {
-            result = await this.$apollo.mutate({
-              mutation: gql`mutation ($taskId: ID! $title: String!) {
-              updateBoardTask(
-                  taskId: $taskId
-                  title: $title
-              ) {
-                  _id
-                  title
-                  column {
-                    _id
-                  }
-                }
-            }`,
-              variables: {
-                taskId: this.task._id,
-                title: this.title
-              },
-              watchLoading(isLoading) {
-                this.loading = isLoading
-              }
-            });
-          } else {
-            result = await this.$apollo.mutate({
-              mutation: gql`mutation ($columnId: ID! $title: String!) {
-              createBoardTask(
-                  columnId: $columnId
-                  title: $title
-              ) {
-                  _id
-                  title
-                  column {
-                    _id
-                  }
-                }
-            }`,
-              variables: {
-                columnId: this.columnId,
-                title: this.title
-              },
-              watchLoading(isLoading) {
-                this.loading = isLoading
-              }
-            });
-          }
-          const {data} = result;
-          this.$emit('update', data);
-          this.isUpdate=false;
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
+        this.loading = true;
+        if (this.task && this.task._id) {
+          await this.$store.dispatch('updateBoardTask', {taskId: this.task._id, title: this.title})
+        } else if (this.columnId) {
+          await this.$store.dispatch('createBoardTask', {columnId: this.columnId, title: this.title});
+          this.$emit('add');
         }
+        this.loading = false;
+        this.isUpdate=false;
       },
       async onDelete () {
-        try {
-          const {data} = await this.$apollo.mutate({
-              mutation: gql`mutation ($columnId: ID! $taskId: ID!) {
-              deleteBoardTask(
-                  columnId: $columnId
-                  taskId: $taskId
-              ) {
-                  _id
-                  column {
-                    _id
-                  }
-                }
-            }`,
-              variables: {
-                columnId: this.columnId,
-                taskId: this.task._id
-              },
-              watchLoading(isLoading) {
-                this.loading = isLoading
-              }
-            });
-          this.$emit('update', data);
-        } catch (e) {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($value: Boolean!) {
-                setError (value: $value) @client
-            }`,
-            variables: {
-              value: e.message,
-            }
-          });
-        }
-
+        this.loading = true;
+        await this.$store.dispatch('deleteBoardTask', {columnId: this.columnId, taskId: this.task._id});
+        this.loading = false;
       },
       onCancel () {
         this.title = this.task ? this.task.title : null;
-        this.$emit('update');
         this.isUpdate=false;
       }
     }
