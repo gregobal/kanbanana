@@ -1,5 +1,4 @@
 import { apolloClient } from '.././vue-apollo'
-import gql from 'graphql-tag'
 
 import {GET_BOARD} from '../graphql/queries'
 import {
@@ -140,12 +139,12 @@ export default {
         console.error(error);
       }
     },
-    async updateBoardTask({state, commit}, {taskId, title}) {
+    async updateBoardTask({state, commit}, {taskId, title, color}) {
       try {
         const {data} = await apolloClient.mutate({
           mutation: UPDATE_BOARD_TASK,
           variables: {
-            taskId, title
+            taskId, title, color
           }
         });
         const {updateBoardTask} = data;
@@ -153,7 +152,8 @@ export default {
           if ('tasks' in column) {
             column.tasks = column.tasks.map(task => {
               if (task._id === updateBoardTask._id) {
-                task.title = updateBoardTask.title
+                task.title = updateBoardTask.title;
+                task.color = updateBoardTask.color;
               }
               return task
             })
@@ -166,12 +166,12 @@ export default {
         console.error(error);
       }
     },
-    async createBoardTask({state, commit}, {columnId, title}) {
+    async createBoardTask({state, commit}, {columnId, title, color}) {
       try {
         const {data} = await apolloClient.mutate({
           mutation: CREATE_BOARD_TASK,
           variables: {
-            columnId, title
+            columnId, title, color
           }
         });
         const {createBoardTask} = data;
@@ -220,7 +220,6 @@ export default {
       }
     },
     async dragTaskInColumns ({state, commit}, {columnId, taskIds}) {
-      console.log(taskIds);
       try {
         const {data} = await apolloClient.mutate({
           mutation: DRAG_TASK_IN_COLUMNS,

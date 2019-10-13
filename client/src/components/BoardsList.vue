@@ -10,17 +10,18 @@
             </v-btn>
         </v-subheader>
         <v-list-item v-if="isAdd">
-            <v-text-field
-                    v-model.trim="title"
-                    class="my-0 py-0"
-                    label="Title"
-                    single-line
-                    clearable
-                    :loading="loading"
-                    append-icon="save"
-                    append-outer-icon="cancel"
-                    @click:append="onSave"
-                    @click:append-outer="isAdd = false"
+            <v-text-field v-model.trim="title"
+                          required
+                          hide-details
+                          class="my-0 py-0"
+                          label="Title"
+                          single-line
+                          clearable
+                          :loading="loading"
+                          :append-icon="title ? 'save' : ''"
+                          append-outer-icon="cancel"
+                          @click:append="onSave"
+                          @click:append-outer="onCancel"
             ></v-text-field>
         </v-list-item>
         <template v-for="(board, i) in boards">
@@ -67,24 +68,30 @@
     },
     methods: {
       async onSave() {
-        this.loading = true;
-        try {
-          const {data} = await this.$apollo.mutate({
-            mutation: CREATE_BOARD,
-            variables: {
-              projectId: this.projectId,
-              title: this.title
-            }
-          });
-          const {createBoard} = data;
-          this.boards.push(createBoard);
-          this.isAdd = false;
-          this.title = null
-        } catch (error) {
-          this.$store.commit('setError', error);
-          console.error(error)
+        if (this.title) {
+          this.loading = true;
+          try {
+            const {data} = await this.$apollo.mutate({
+              mutation: CREATE_BOARD,
+              variables: {
+                projectId: this.projectId,
+                title: this.title
+              }
+            });
+            const {createBoard} = data;
+            this.boards.unshift(createBoard);
+            this.isAdd = false;
+            this.title = null
+          } catch (error) {
+            this.$store.commit('setError', error);
+            console.error(error)
+          }
+          this.loading = false;
         }
-        this.loading = false;
+      },
+      onCancel () {
+        this.title = null;
+        this.isAdd = false;
       }
     }
   }

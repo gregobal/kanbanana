@@ -74,11 +74,13 @@ module.exports = gql`
         createBoardTask(
             columnId: ID!
             title: String!
+            color: String
         ):BoardTask!
 
         updateBoardTask(
             taskId: ID!
-            title: String!            
+            title: String!
+            color: String
         ):BoardTask!
 
         deleteBoardTask(

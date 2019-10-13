@@ -1,15 +1,17 @@
 <template>
-    <v-container v-if="board">
-        <v-card>
+    <v-container v-if="board" fluid :style="overflowX">
+        <v-card min-width="1384">
             <v-toolbar dense flat>
                 <v-toolbar-title>
-                    <v-text-field
-                            v-if="isToolbarEdit"
-                            v-model.trim="title"
-                            label="Title"
-                            single-line
-                            clearable
-                    ></v-text-field>
+                    <v-text-field v-if="isToolbarEdit"
+                                  v-model.trim="title"
+                                  :error="!title"
+                                  required
+                                  class="mt-4"
+                                  label="Title"
+                                  single-line
+                                  clearable>
+                    </v-text-field>
                     <span v-else>Board: <span class="font-weight-bold">{{board.title}}</span></span>
                 </v-toolbar-title>
                 <div class="flex-grow-1"></div>
@@ -18,6 +20,7 @@
                         <v-btn class="mr-1"
                                fab x-small outlined
                                :loading="loading"
+                               :disabled="!title"
                                @click="onSave">
                             <v-icon small>save</v-icon>
                         </v-btn>
@@ -35,22 +38,24 @@
                 </v-toolbar-title>
             </v-toolbar>
             <v-toolbar dense flat>
-                <v-toolbar-title class="body-2">
-                    <v-text-field
-                            v-if="isToolbarEdit"
-                            v-model.trim="descr"
-                            label="Description"
-                            single-line
-                            clearable
-                    ></v-text-field>
-                    <span v-else ><span class="font-weight-medium">Description: </span>{{board.descr}}</span>
-                </v-toolbar-title>
+                <v-row class="body-2">
+                    <v-col cols="11">
+                        <v-text-field v-if="isToolbarEdit"
+                                      v-model.trim="descr"
+                                      class="mt-4"
+                                      label="Description"
+                                      single-line
+                                      clearable>
+                        </v-text-field>
+                        <span v-else><span class="font-weight-medium">Description: </span>{{board.descr}}</span>
+                    </v-col>
+                </v-row>
             </v-toolbar>
             <draggable :list="columns"
                        handle=".column-handle"
                        @start="onColumnDragStart"
                        @end="onColumnDragEnd"
-                       class="ma-3 green lighten-5 d-flex justify-center align-start">
+                       :class="'ma-3 green lighten-5 d-flex align-start justify-' + ($vuetify.breakpoint.width >= respPoint ? 'center' : 'start')">
                 <board-column v-for="column in columns" :key="column._id"
                               :column="column"
                               :board-id="boardId">
@@ -94,7 +99,8 @@
         isColumnAdd: false,
         title: null,
         descr: null,
-        columnsOrderBeforeDrag: []
+        columnsOrderBeforeDrag: [],
+        respPoint: 1440
       }
     },
     computed: {
@@ -104,6 +110,12 @@
       },
       columns: function () {
         return this.$store.state.board.columns
+      },
+      overflowX: function () {
+        if (this.$vuetify.breakpoint.width < this.respPoint) {
+          return {overflowX: 'scroll'}
+        }
+        return {}
       }
     },
     watch: {
@@ -112,17 +124,21 @@
         this.descr = this.board.descr;
       }
     },
-    mounted () {
-      this.$store.dispatch('getBoardFromApi', this.boardId)
+    async beforeMount () {
+      await this.$store.dispatch('getBoardFromApi', this.boardId);
+      this.title = this.board.title;
+      this.descr = this.board.descr;
     },
     methods: {
       async onSave () {
-        await this.$store.dispatch('updateBoard', {
-          boardId: this.boardId,
-          title: this.title,
-          descr: this.descr
-        });
-        this.isToolbarEdit = false;
+        if (this.title) {
+          await this.$store.dispatch('updateBoard', {
+            boardId: this.boardId,
+            title: this.title,
+            descr: this.descr
+          });
+          this.isToolbarEdit = false;
+        }
       },
       onCancel () {
         this.title = this.board.title;

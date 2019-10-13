@@ -15,7 +15,7 @@
                     </v-btn>
                 </v-col>
             </v-card-title>
-            <v-sheet class="mx-1 body-2 yellow lighten-5">
+            <v-sheet class="mx-1 pt-1 body-2 yellow lighten-5">
                 <draggable v-model="tasks"
                            group="task"
                            handle=".task-handle"

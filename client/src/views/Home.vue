@@ -1,15 +1,15 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <h1 class="headline">Welcome to project boards app</h1>
+      <h1 class="headline mx-6 text-center">Welcome to project boards app</h1>
     </v-row>
     <v-row justify="center">
-      <v-col cols="6">
-        <blockquote class="blockquote text-justify">
+      <v-col lg="4" md="6" sm="10" xs="12">
+        <div class="body-1 text-justify font-weight-light">
           &nbsp;&nbsp;&nbsp;&nbsp;Project boards on KanBanana help you organize and prioritize your work.
-          Create board for yor ToDo list or compound project - it's simple, it's efficiently.
+          Create board for your ToDo list or compound project - it's simple, it's efficiently.
           With project boards, you have the flexibility to create customized workflows that suit your needs.
-        </blockquote>
+        </div>
       </v-col>
     </v-row>
     <v-row justify="center">

@@ -110,28 +110,33 @@ export const DRAG_COLUMN_IN_BOARD = gql`mutation ($boardId: ID! $columnIds: [ID!
             tasks {
                 _id
                 title
+                color
             }
         }
     }
 }`;
 
-export const CREATE_BOARD_TASK = gql`mutation ($columnId: ID! $title: String!) {
+export const CREATE_BOARD_TASK = gql`mutation ($columnId: ID! $title: String! $color: String) {
     createBoardTask(
         columnId: $columnId
         title: $title
+        color: $color
     ) {
         _id
         title
+        color
     }
 }`;
 
-export const UPDATE_BOARD_TASK = gql`mutation ($taskId: ID! $title: String!) {
+export const UPDATE_BOARD_TASK = gql`mutation ($taskId: ID! $title: String! $color: String) {
     updateBoardTask(
         taskId: $taskId
         title: $title
+        color: $color
     ) {
         _id
         title
+        color
     }
 }`;
 
@@ -154,6 +159,7 @@ export const DRAG_TASK_IN_COLUMNS = gql`mutation ($columnId: ID! $taskIds: [ID]!
         tasks {
             _id
             title
+            color
         }
     }
 }`;

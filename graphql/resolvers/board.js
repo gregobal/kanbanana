@@ -3,12 +3,14 @@ const {ApolloError} = require('apollo-server');
 const User = require('../../models/User');
 const Project = require('../../models/Project');
 const Board = require('../../models/Board');
+const BoardColumn = require('../../models/BoardColumn');
 
 
 module.exports = {
   getBoard: async ({boardId}) => {
     try {
       return await Board.findById(boardId)
+        .sort({createdAt: -1})
         .populate('project')
         .populate({
             path: 'columns',
@@ -43,6 +45,17 @@ module.exports = {
         creator: user,
         project
       });
+      const column1 = new BoardColumn({
+        title: 'To do',
+        board
+      });
+      const column2 = new BoardColumn({
+        title: 'Done',
+        board
+      });
+      await column1.save();
+      await column2.save();
+      board.columns = [column1, column2];
       return await board.save()
     } catch (e) {
       throw new ApolloError(e)

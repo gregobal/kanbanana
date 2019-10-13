@@ -33,14 +33,15 @@
     },
     mounted() {
       if (this.error) {
-        this.errorMessage = this.error.message;
-        this.snackbar = true;
         if (this.error.message === 'GraphQL error: You must be logged in.') {
           this.$store.commit('setUser', null);
           if (this.$route.name !== 'login') {
             this.$router.push('/login')
           }
+          return
         }
+        this.errorMessage = this.error.message;
+        this.snackbar = true;
       }
     }
   }

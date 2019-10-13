@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar color="green lighten-4" class="mb-3">
+    <v-app-bar app color="green lighten-4">
         <v-toolbar-title class="headline">
             <span @click="$route.path !== '/' && $router.push('/')"
                   class="font-weight-black" style="cursor: pointer">
@@ -9,7 +9,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
-        <span v-if="user" class="mx-3">{{ user.name || user.email }}</span>
+        <span v-if="user && $vuetify.breakpoint.name !== 'xs'" class="mx-3 text-truncate">{{ user.name || user.email }}</span>
         <div class="text-center">
             <v-menu offset-y v-if="user">
                 <template v-slot:activator="{ on }">
