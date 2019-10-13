@@ -4,7 +4,10 @@
                align="center"
                justify="center">
             <v-col class="mt-6" cols="12" sm="8" md="4">
-                <v-form>
+                <v-form ref="regForm"
+                        v-model="valid"
+                        lazy-validation
+                        @submit.prevent="onRegister">
                     <v-card class="elevation-12">
                         <v-toolbar flat>
                             <v-toolbar-title>
@@ -14,6 +17,9 @@
                         <v-divider></v-divider>
                         <v-card-text>
                             <v-text-field v-model="email"
+                                          :rules="emailRules"
+                                          required
+                                          clearable
                                           label="Email"
                                           name="email"
                                           prepend-icon="email"
@@ -26,6 +32,9 @@
                                           type="text">
                             </v-text-field>
                             <v-text-field v-model="password"
+                                          :rules="passwordRules"
+                                          required
+                                          clearable
                                           label="Password"
                                           name="password"
                                           prepend-icon="lock"
@@ -36,7 +45,7 @@
                             <div class="flex-grow-1"></div>
                             <v-btn large
                                    :loading="loading"
-                                   @click="register">
+                                   type="submit">
                                 <span class="mx-5">Register</span>
                             </v-btn>
                         </v-card-actions>
@@ -51,39 +60,54 @@
   import {REGISTER} from "../graphql/mutations";
   export default {
     name: "Register",
-    data: () => ({
-      loading: false,
-      email: null,
-      password: null,
-      name: null
-    }),
+    data() {
+      return {
+        valid: true,
+        loading: false,
+        email: null,
+        emailRules: [
+          v => !!v || 'E-mail is required',
+          v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+        ],
+        password: null,
+        passwordRules: [
+          v => !!v || 'Password is required',
+          v => (v && v.length >= 8) || 'Password must be at least 8 characters',
+        ],
+        name: null
+      }
+    },
     methods: {
-      async register() {
-        this.loading = true;
-        try {
-          const result = await this.$apollo.mutate({
-            mutation: REGISTER,
-            variables: {
-              email: this.email,
-              password: this.password,
-              name: this.name
-            }
-          });
-          const {data} = result;
-          this.$router.push({
-            name: 'login',
-            params: {
-              createUser: {
-                ...data.createUser,
-                message: 'Now you can log in using your data.'
+      async onRegister() {
+        if (this.$refs.regForm.validate()) {
+          this.loading = true;
+          try {
+            const {data, errors} = await this.$apollo.mutate({
+              mutation: REGISTER,
+              variables: {
+                email: this.email,
+                password: this.password,
+                name: this.name
               }
+            });
+            this.$router.push({
+              name: 'login',
+              params: {
+                createUser: {
+                  ...data.createUser,
+                  message: 'Now you can log in using your data.'
+                }
+              }
+            });
+            if (errors) {
+              throw new Error(errors[0])
             }
-          })
-        } catch (error) {
-          this.$store.commit('setError', error);
-          console.error(error)
+          } catch (error) {
+            this.$store.commit('setError', error);
+            console.error(error)
+          }
+          this.loading = false;
         }
-        this.loading = false;
       }
     }
   }

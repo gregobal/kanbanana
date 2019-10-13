@@ -36,6 +36,7 @@
         </v-card-text>
         <v-card-actions class="py-0" v-if="isUpdate">
             <v-btn @click="onSave"
+                   :disabled="!title"
                    :loading="loading"
                    text small>
                 Save
@@ -85,15 +86,21 @@
     },
     methods: {
       async onSave () {
-        this.loading = true;
-        if (this.task && this.task._id) {
-          await this.$store.dispatch('updateBoardTask', {taskId: this.task._id, title: this.title, color: this.color})
-        } else if (this.columnId) {
-          await this.$store.dispatch('createBoardTask', {columnId: this.columnId, title: this.title, color: this.color});
-          this.$emit('add');
+        if (this.title) {
+          this.loading = true;
+          if (this.task && this.task._id) {
+            await this.$store.dispatch('updateBoardTask', {taskId: this.task._id, title: this.title, color: this.color})
+          } else if (this.columnId) {
+            await this.$store.dispatch('createBoardTask', {
+              columnId: this.columnId,
+              title: this.title,
+              color: this.color
+            });
+            this.$emit('add');
+          }
+          this.loading = false;
+          this.isUpdate = false;
         }
-        this.loading = false;
-        this.isUpdate=false;
       },
       async onDelete () {
         this.loading = true;

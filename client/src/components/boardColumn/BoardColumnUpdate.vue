@@ -4,6 +4,7 @@
             <v-text-field
                     class="mx-5 mt-0 mb-2"
                     v-model.trim="title"
+                    required
                     label="Title"
                     single-line
                     clearable
@@ -12,6 +13,7 @@
             <v-card-actions>
                 <v-btn @click="onSave"
                        :loading="loading"
+                       :disabled="!title"
                        text small>
                     Save
                 </v-btn>
@@ -21,7 +23,8 @@
                     Cancel
                 </v-btn>
                 <div class="flex-grow-1"></div>
-                <v-btn @click="onDelete"
+                <v-btn v-if="column"
+                       @click="onDelete"
                        color="red"
                        :loading="loading"
                        text small>
@@ -47,14 +50,16 @@
     },
     methods: {
       async onSave() {
-        this.loading = true;
-        if (this.column && this.column._id) {
-          await this.$store.dispatch('updateBoardColumn', {columnId: this.column._id, title: this.title})
-        } else if (this.boardId) {
-          await this.$store.dispatch('createBoardColumn', {boardId: this.boardId, title: this.title})
+        if (this.title) {
+          this.loading = true;
+          if (this.column && this.column._id) {
+            await this.$store.dispatch('updateBoardColumn', {columnId: this.column._id, title: this.title})
+          } else if (this.boardId) {
+            await this.$store.dispatch('createBoardColumn', {boardId: this.boardId, title: this.title})
+          }
+          this.loading = false;
+          this.$emit('update');
         }
-        this.loading = false;
-        this.$emit('update');
       },
       async onDelete () {
         this.loading = true;
