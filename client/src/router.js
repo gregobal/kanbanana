@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 
 import Home from './views/Home'
 import Login from './views/Login'
@@ -33,13 +34,23 @@ export default new Router({
     {
       path: '/projects',
       name: 'projects',
-      component: Projects
+      component: Projects,
+      beforeEnter: authGuard
     },
     {
       path: '/board/:boardId',
       name: 'board',
       component: Board,
-      props: true
+      props: true,
+      beforeEnter: authGuard
     }
   ]
 })
+
+function authGuard (to, from, next) {
+  if (store.state.user) {
+    next()
+  } else {
+    next('/login')
+  }
+}
