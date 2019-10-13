@@ -12,6 +12,7 @@ export const GET_BOARD = gql`query ($boardId: ID!) {
             tasks {
                 _id
                 title
+                color
             }
         }
     }

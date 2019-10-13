@@ -5,11 +5,12 @@ const BoardColumn = require('../../models/BoardColumn');
 
 
 module.exports = {
-  createBoardTask: async ({title, columnId}) => {
+  createBoardTask: async ({title, color, columnId}) => {
     try {
       const column = await BoardColumn.findById(columnId);
       const boardTask = new BoardTask({
-        title
+        title,
+        color
       });
       await boardTask.save();
       column.tasks.push(boardTask);
@@ -19,12 +20,13 @@ module.exports = {
       throw new ApolloError(e)
     }
   },
-  updateBoardTask: async ({taskId, title}) => {
+  updateBoardTask: async ({taskId, title, color}) => {
     try {
       return BoardTask.findOneAndUpdate(
         {_id: taskId},
         {
           title,
+          color
         },
         {new: true}
       );
