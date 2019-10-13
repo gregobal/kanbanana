@@ -3,7 +3,7 @@
         <v-row class="my-6"
                align="center"
                justify="center">
-            <v-col class="mt-6" cols="12" sm="8" md="4">
+            <v-col class="mt-6" cols="12" sm="8" lg="6" xl="4">
                 <v-form ref="loginForm"
                         v-model="valid"
                         lazy-validation
@@ -50,7 +50,7 @@
         </v-row>
         <v-row xs="12">
             <v-col class="text-center">
-                <router-link to="/register">Not a member - register now.</router-link>
+                <router-link to="/register">Not a member - register now</router-link>
             </v-col>
         </v-row>
     </v-container>
@@ -63,6 +63,18 @@
     name: "Login",
     props: {
       createUser: Object
+    },
+    computed: {
+      user: function () {
+        return this.$store.state.user
+      }
+    },
+    watch: {
+      user: function(newUser) {
+        if (newUser) {
+          this.$router.push('/projects')
+        }
+      }
     },
     data() {
       return {
@@ -95,7 +107,6 @@
             const {login} = data;
             await onLogin(this.$apollo.provider.defaultClient, data.login.token);
             this.$store.commit('setUser', login.user);
-            this.createUser ? this.$router.push('/') : this.$router.back()
             if (errors) {
               throw new Error(errors[0])
             }

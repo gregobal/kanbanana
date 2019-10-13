@@ -16,6 +16,14 @@ export const {apolloClient} = createApolloClient({
   persisting: false,
   websocketsOnly: false,
   ssr: false,
+  cache: null,
+  apollo: {
+    defaultOptions: {
+      query: {
+        fetchPolicy: 'no-cache'
+      }
+    }
+  },
 });
 
 export function createProvider () {
@@ -23,7 +31,7 @@ export function createProvider () {
     defaultClient: apolloClient,
     defaultOptions: {
       $query: {
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache'
       }
     },
     async errorHandler (error) {

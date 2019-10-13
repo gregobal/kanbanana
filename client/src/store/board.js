@@ -1,5 +1,4 @@
 import { apolloClient } from '.././vue-apollo'
-import gql from 'graphql-tag'
 
 import {GET_BOARD} from '../graphql/queries'
 import {
@@ -221,7 +220,6 @@ export default {
       }
     },
     async dragTaskInColumns ({state, commit}, {columnId, taskIds}) {
-      console.log(taskIds);
       try {
         const {data} = await apolloClient.mutate({
           mutation: DRAG_TASK_IN_COLUMNS,

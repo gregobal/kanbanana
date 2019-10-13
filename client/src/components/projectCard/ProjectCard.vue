@@ -18,13 +18,13 @@
                 {{project.descr}}
             </v-sheet>
             <v-card-actions>
-                <v-row align="center" justify="space-around">
+                <v-row class="px-1" align="center" justify="space-around">
+                    <div class="caption">{{formatDate(project.createdAt)}}</div>
                     <v-btn text
                            @click="showBoards = !showBoards">
                         Boards
                         <v-icon>{{showBoards ? 'arrow_drop_up' : 'arrow_drop_down'}}</v-icon>
                     </v-btn>
-                    <span class="caption">{{formatDate(project.createdAt)}}</span>
                 </v-row>
             </v-card-actions>
             <boards-list v-if="showBoards"

@@ -29,7 +29,14 @@ export default new Router({
     {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
+      beforeEnter: function (to, from, next) {
+        if (store.state.user) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
     {
       path: '/projects',

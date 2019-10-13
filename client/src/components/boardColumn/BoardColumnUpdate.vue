@@ -17,11 +17,14 @@
                        text small>
                     Save
                 </v-btn>
+                <div class="flex-grow-1"></div>
                 <v-btn @click="$emit('update')"
                        :loading="loading"
                        text small>
                     Cancel
                 </v-btn>
+                <div class="flex-grow-1"></div>
+                <div class="flex-grow-1"></div>
                 <div class="flex-grow-1"></div>
                 <v-btn v-if="column"
                        @click="onDelete"

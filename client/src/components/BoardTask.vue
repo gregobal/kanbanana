@@ -41,12 +41,15 @@
                    text small>
                 Save
             </v-btn>
+            <div class="flex-grow-1"></div>
             <v-btn @click="onCancel"
                    :loading="loading"
                    text small>
                 Cancel
             </v-btn>
-            <div class="flex-grow-1" style="cursor: move"></div>
+            <div class="flex-grow-1"></div>
+            <div class="flex-grow-1"></div>
+            <div class="flex-grow-1"></div>
             <v-menu bottom>
                 <template v-slot:activator="{ on }">
                     <v-btn text small

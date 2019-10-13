@@ -1,6 +1,6 @@
 <template>
-    <v-container v-if="board">
-        <v-card>
+    <v-container v-if="board" fluid :style="overflowX">
+        <v-card min-width="1384">
             <v-toolbar dense flat>
                 <v-toolbar-title>
                     <v-text-field v-if="isToolbarEdit"
@@ -55,7 +55,7 @@
                        handle=".column-handle"
                        @start="onColumnDragStart"
                        @end="onColumnDragEnd"
-                       class="ma-3 green lighten-5 d-flex justify-center align-start">
+                       :class="'ma-3 green lighten-5 d-flex align-start justify-' + ($vuetify.breakpoint.width >= respPoint ? 'center' : 'start')">
                 <board-column v-for="column in columns" :key="column._id"
                               :column="column"
                               :board-id="boardId">
@@ -99,7 +99,8 @@
         isColumnAdd: false,
         title: null,
         descr: null,
-        columnsOrderBeforeDrag: []
+        columnsOrderBeforeDrag: [],
+        respPoint: 1440
       }
     },
     computed: {
@@ -109,6 +110,12 @@
       },
       columns: function () {
         return this.$store.state.board.columns
+      },
+      overflowX: function () {
+        if (this.$vuetify.breakpoint.width < this.respPoint) {
+          return {overflowX: 'scroll'}
+        }
+        return {}
       }
     },
     watch: {
@@ -117,7 +124,7 @@
         this.descr = this.board.descr;
       }
     },
-    async mounted () {
+    async beforeMount () {
       await this.$store.dispatch('getBoardFromApi', this.boardId);
       this.title = this.board.title;
       this.descr = this.board.descr;

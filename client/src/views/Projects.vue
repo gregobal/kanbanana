@@ -5,7 +5,7 @@
         </v-row>
         <v-divider class="my-3" inset></v-divider>
         <v-row align="start" justify="start">
-            <v-col cols="2" class="text-center">
+            <v-col cols="12" sm="4" md="3" xl="2" class="text-center">
                 <project-card-update v-if="isAdd"
                                      @update="onUpdate">
                 </project-card-update>
@@ -20,7 +20,7 @@
                     </v-btn>
                 </v-card>
             </v-col>
-            <v-col cols="2"
+            <v-col cols="12" sm="4" md="3" xl="2"
                    v-for="project in projects" :key="project._id">
                 <project-card :project="project"
                               @update="onUpdate">

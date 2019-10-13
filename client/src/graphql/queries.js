@@ -1,6 +1,13 @@
 import gql from 'graphql-tag'
 
 
+export const GET_USER = gql`query {
+    user {
+        email,
+        name
+    }
+}`;
+
 export const GET_BOARD = gql`query ($boardId: ID!) {
     board (boardId: $boardId) {
         _id

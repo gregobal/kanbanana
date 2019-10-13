@@ -3,7 +3,7 @@
         <v-row class="my-6"
                align="center"
                justify="center">
-            <v-col class="mt-6" cols="12" sm="8" md="4">
+            <v-col class="mt-6" cols="12" sm="8" lg="6" xl="4">
                 <v-form ref="regForm"
                         v-model="valid"
                         lazy-validation
@@ -94,7 +94,7 @@
               name: 'login',
               params: {
                 createUser: {
-                  ...data.createUser,
+                  email: data.createUser.email,
                   message: 'Now you can log in using your data.'
                 }
               }

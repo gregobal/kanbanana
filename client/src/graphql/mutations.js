@@ -110,6 +110,7 @@ export const DRAG_COLUMN_IN_BOARD = gql`mutation ($boardId: ID! $columnIds: [ID!
             tasks {
                 _id
                 title
+                color
             }
         }
     }

@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-content class="fill-height yellow lighten-5">
-      <app-header></app-header>
+    <app-header></app-header>
+    <v-content class="fill-height yellow lighten-5 mt-3">
       <router-view></router-view>
     </v-content>
     <app-loader v-if="loading"></app-loader>
@@ -12,10 +12,10 @@
 </template>
 
 <script>
-  import gql from 'graphql-tag'
   import AppLoader from './components/AppLoader'
   import AppHeader from './components/AppHeader'
   import AppErrorHandler from './components/AppErrorHandler'
+  import {GET_USER} from "./graphql/queries";
 
 export default {
   name: 'App',
@@ -34,15 +34,13 @@ export default {
   },
   apollo: {
     user: {
-      query: gql`query {
-        user {
-          email,
-          name
-        }
-      }`,
+      query: GET_USER,
       result({data}) {
         this.$store.commit('setUser', data.user)
-      }
+      },
+      watchLoading (isLoading) {
+        this.$store.commit('setLoading', isLoading)
+      },
     }
   }
 };

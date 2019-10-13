@@ -79,7 +79,7 @@
               }
             });
             const {createBoard} = data;
-            this.boards.push(createBoard);
+            this.boards.unshift(createBoard);
             this.isAdd = false;
             this.title = null
           } catch (error) {
