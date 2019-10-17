@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid>
-    <v-row justify="center">
+  <v-container fluid class="mt-6">
+    <v-row justify="center" class="mt-6">
       <h1 class="headline mx-6 text-center">Welcome to project boards app</h1>
     </v-row>
-    <v-row justify="center">
+    <v-row justify="center" class="mt-6">
       <v-col lg="4" md="6" sm="10" xs="12">
         <div class="body-1 text-justify font-weight-light">
           &nbsp;&nbsp;&nbsp;&nbsp;Project boards on KanBanana help you organize and prioritize your work.
@@ -12,14 +12,16 @@
         </div>
       </v-col>
     </v-row>
-    <v-row justify="center">
+    <v-row justify="center" class="mt-6">
       <h2 class="title my-3">
         <router-link to="/projects">Just do it.</router-link>
       </h2>
     </v-row>
     <v-row justify="center" v-if="!user">
       <h2 class="subtitle-2">
-        Not a member - <router-link to="/register">register</router-link> now.
+        Not a member -
+        <router-link to="/register">register</router-link>
+        now.
       </h2>
     </v-row>
   </v-container>
