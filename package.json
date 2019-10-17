@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node index",
     "server": "nodemon index -e js,json,graphql",
+    "client": "npm run serve --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client-install": "npm install --dev --prefix client",
     "heroku-postbuild": "npm run client-install && npm run build --prefix client"
