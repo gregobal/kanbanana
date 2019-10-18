@@ -15,7 +15,7 @@
                 </div>
             </v-row>
             <v-divider></v-divider>
-            <div class="body-2 yellow--text text--accent-1">{{ new Date().getFullYear() }}</div>
+            <div class="body-2 yellow--text text--accent-1 text-end px-3">{{ new Date().getFullYear() }}</div>
         </v-card>
     </v-footer>
 </template>
@@ -36,11 +36,11 @@
           },
           {
             href: 'https://expressjs.com/',
-            img: 'https://3.bp.blogspot.com/-OqnWe3_TBGg/WQ7n6g_1fkI/AAAAAAAAAAw/LgSwd_s-3F8DPPAF545xYbJpL_OAEUT_wCLcB/s200/Express-2.jpg'
+            img: 'http://sitev.ru/images/post/expressjs.png'
           },
           {
             href: 'https://mongoosejs.com/',
-            img: 'https://theoestudio.com/content/images/size/w2000/2019/01/mongodb.png'
+            img: 'https://mongoosejs.com/docs/images/mongoose5_62x30_transparent.png'
           }
         ]
       }
@@ -55,7 +55,7 @@
           case 'lg':
             return 32;
           default:
-            return 64
+            return 48
         }
       }
     }
