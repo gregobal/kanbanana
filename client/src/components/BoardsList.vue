@@ -81,6 +81,7 @@
             const {createBoard} = data;
             this.boards.unshift(createBoard);
             this.isAdd = false;
+            this.$router.push(`/board/${createBoard._id}`);
             this.title = null
           } catch (error) {
             this.$store.commit('setError', error);

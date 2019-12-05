@@ -7,9 +7,16 @@
                 <div v-for="(link, i) in links" :key="i">
                     <a :href="link.href">
                         <v-col>
-                            <img :src="link.img"
+                            <img v-if="link.img"
+                                 class="text--white"
+                                 :src="link.img"
                                  alt="links"
                                  :height="imgHeight"/>
+                            <span v-else
+                                  :class="textClass"
+                                  style="color: white !important;">
+                                {{ link.text }}
+                            </span>
                         </v-col>
                     </a>
                 </div>
@@ -36,7 +43,7 @@
           },
           {
             href: 'https://expressjs.com/',
-            img: 'http://sitev.ru/images/post/expressjs.png'
+            text: 'Express'
           },
           {
             href: 'https://mongoosejs.com/',
@@ -46,7 +53,7 @@
       }
     },
     computed: {
-      imgHeight: function () {
+      imgHeight () {
         switch (this.$vuetify.breakpoint.name) {
           case 'xs':
           case 'sm':
@@ -56,6 +63,18 @@
             return 32;
           default:
             return 48
+        }
+      },
+      textClass () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs':
+          case 'sm':
+            return 'subtitle-1';
+          case 'md':
+          case 'lg':
+            return 'title';
+          default:
+            return 'headline'
         }
       }
     }
